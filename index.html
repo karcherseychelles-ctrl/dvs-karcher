@@ -4,91 +4,64 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>DVS International — Kärcher Staff Portal</title>
-
-<!-- Firebase SDKs - loaded synchronously -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#f0f0f0;color:#1a1a1a;font-size:14px}
-
-/* ── FIREBASE CONFIG SCREEN ── */
-#cfg-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#1a1a1a;padding:1rem}
-.cfg-box{background:#fff;border-radius:10px;padding:2rem;max-width:560px;width:100%;box-shadow:0 4px 24px rgba(0,0,0,.3)}
-.cfg-logo{background:#FFD700;color:#000;font-weight:900;font-size:13px;padding:8px 12px;border-radius:6px;display:inline-block;margin-bottom:1rem}
-.cfg-title{font-size:18px;font-weight:700;margin-bottom:.25rem}
-.cfg-sub{font-size:12px;color:#666;margin-bottom:1.25rem;line-height:1.5}
-.cfg-field{display:flex;flex-direction:column;gap:4px;margin-bottom:.75rem}
-.cfg-field label{font-size:11px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.05em}
-.cfg-field input{font-size:12px;font-family:monospace;border:1px solid #ccc;border-radius:5px;padding:7px 10px;background:#f8f8f8}
-.cfg-field input:focus{outline:none;border-color:#FFD700}
-.cfg-note{background:#fff8d6;border:1px solid #e6c200;border-radius:6px;padding:10px 12px;font-size:11px;color:#7a6000;margin-bottom:1rem;line-height:1.6}
-.cfg-note a{color:#0070cc}
-.cfg-err{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;border-radius:5px;padding:8px 12px;font-size:12px;margin-bottom:.75rem;display:none}
-
-/* ── LOGIN SCREEN ── */
+.wrap{max-width:1100px;margin:0 auto;padding:1rem}
+/* Header */
+.hdr{display:flex;align-items:center;gap:12px;margin-bottom:1rem;padding:.875rem 1.125rem;border-radius:8px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.08);border-bottom:3px solid #FFD700}
+.hdr-logo{background:#FFD700;color:#000;font-weight:700;font-size:11px;padding:7px 10px;border-radius:6px;line-height:1.4;text-align:center;white-space:nowrap;flex-shrink:0}
+.hdr-title{font-size:16px;font-weight:700}.hdr-sub{font-size:11px;color:#666;margin-top:1px}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.user-chip{background:#f5f5f5;border:1px solid #ddd;border-radius:20px;padding:4px 12px;font-size:12px;display:flex;align-items:center;gap:6px}
+.role-badge{font-size:10px;padding:2px 7px;border-radius:3px;font-weight:700;text-transform:uppercase}
+.role-admin{background:#dc3545;color:#fff}.role-manager{background:#0070cc;color:#fff}
+.role-technician{background:#28a745;color:#fff}.role-viewer{background:#888;color:#fff}
+.sync-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:3px}
+.sync-ok{background:#28a745}.sync-off{background:#dc3545}.sync-pending{background:#ffc107;animation:pulse .8s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+/* Login */
 #login-screen{display:none;align-items:center;justify-content:center;min-height:100vh;background:#1a1a1a;padding:1rem}
 .login-box{background:#fff;border-radius:10px;padding:2rem;max-width:420px;width:100%;box-shadow:0 4px 24px rgba(0,0,0,.3)}
 .login-logo{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem}
-.login-logo .logo-badge{background:#FFD700;color:#000;font-weight:900;font-size:12px;padding:8px 11px;border-radius:6px;line-height:1.4;text-align:center}
-.login-title{font-size:16px;font-weight:700;color:#1a1a1a}
-.login-sub{font-size:11px;color:#666;margin-top:2px}
 .login-field{display:flex;flex-direction:column;gap:4px;margin-bottom:.75rem}
 .login-field label{font-size:11px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.05em}
-.login-field input{font-size:13px;font-family:Arial,sans-serif;border:1px solid #ccc;border-radius:5px;padding:8px 10px;background:#fff}
-.login-field input:focus{outline:none;border-color:#FFD700;box-shadow:0 0 0 2px rgba(255,215,0,.2)}
+.login-field input{font-size:13px;border:1px solid #ccc;border-radius:5px;padding:8px 10px}
+.login-field input:focus{outline:none;border-color:#FFD700}
 .login-err{background:#f8d7da;color:#721c24;border-radius:5px;padding:8px 12px;font-size:12px;margin-bottom:.75rem;display:none}
 .divider{text-align:center;font-size:11px;color:#aaa;margin:.75rem 0;position:relative}
 .divider::before,.divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:#eee}
 .divider::before{left:0}.divider::after{right:0}
 .google-btn{width:100%;padding:9px;border:1px solid #ddd;border-radius:5px;background:#fff;cursor:pointer;font-size:13px;font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;color:#333;font-weight:600}
 .google-btn:hover{background:#f5f5f5}
-.google-icon{width:18px;height:18px}
-
-/* ── MAIN APP ── */
-#app{display:none}
-.wrap{max-width:1040px;margin:0 auto;padding:1.25rem 1rem}
-.hdr{display:flex;align-items:center;gap:12px;margin-bottom:1rem;padding:.875rem 1.125rem;border-radius:8px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.08);border-bottom:3px solid #FFD700}
-.hdr-logo{background:#FFD700;color:#000;font-weight:700;font-size:11px;padding:7px 10px;border-radius:6px;line-height:1.4;text-align:center;white-space:nowrap;flex-shrink:0}
-.hdr-title{font-size:16px;font-weight:700;color:#1a1a1a}
-.hdr-sub{font-size:11px;color:#666;margin-top:1px}
-.hdr-right{margin-left:auto;display:flex;align-items:center;gap:10px;flex-shrink:0}
-.user-chip{background:#f5f5f5;border:1px solid #ddd;border-radius:20px;padding:4px 12px;font-size:12px;display:flex;align-items:center;gap:6px}
-.role-badge{font-size:10px;padding:2px 7px;border-radius:3px;font-weight:700;text-transform:uppercase}
-.role-admin{background:#dc3545;color:#fff}
-.role-manager{background:#0070cc;color:#fff}
-.role-technician{background:#28a745;color:#fff}
-.role-viewer{background:#888;color:#fff}
-
-/* ── TABS ── */
+/* Tabs */
 .tabs{display:flex;gap:3px;margin-bottom:1rem;flex-wrap:wrap}
-.tab{padding:7px 12px;border:1px solid #ccc;border-radius:6px;font-size:12px;cursor:pointer;background:#fff;color:#555;font-weight:600;transition:all .15s}
-.tab:hover{background:#fff8d6}
-.tab.active{background:#FFD700;border-color:#c8a900;color:#000}
+.tab{padding:7px 11px;border:1px solid #ccc;border-radius:6px;font-size:12px;cursor:pointer;background:#fff;color:#555;font-weight:600;transition:all .15s}
+.tab:hover{background:#fff8d6}.tab.active{background:#FFD700;border-color:#c8a900;color:#000}
 .tab.hidden{display:none}
 .panel{display:none}.panel.active{display:block}
-
-/* ── CARDS & FORM ── */
+/* Cards */
 .card{background:#fff;border:1px solid #ddd;border-radius:8px;padding:.875rem 1.125rem;margin-bottom:.875rem;box-shadow:0 1px 3px rgba(0,0,0,.04)}
 .sec{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem;padding-bottom:.35rem;border-bottom:1px solid #f0f0f0}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 .g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
+.g5{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:10px}
 .f{display:flex;flex-direction:column;gap:3px}
 .f label{font-size:11px;color:#555;font-weight:700}
 .f input,.f select,.f textarea{font-size:13px;font-family:Arial,sans-serif;border:1px solid #ccc;border-radius:5px;padding:5px 8px;background:#fff;color:#1a1a1a}
 .f input:focus,.f select:focus,.f textarea:focus{outline:none;border-color:#FFD700;box-shadow:0 0 0 2px rgba(255,215,0,.2)}
-.f input:disabled,.f select:disabled,.f textarea:disabled{background:#f5f5f5;color:#aaa;cursor:not-allowed}
+.f input:disabled,.f select:disabled{background:#f5f5f5;color:#aaa;cursor:not-allowed}
 .f textarea{resize:vertical;min-height:60px}
 .full{grid-column:1/-1}
 .ref-box{background:#fff8d6;border:1px solid #e6c200;border-radius:5px;padding:7px 10px;font-size:13px;font-weight:700;color:#7a6000;font-family:monospace}
 .edit-banner{background:#fff3cd;border:1px solid #ffc107;border-radius:6px;padding:8px 12px;font-size:12px;color:#856404;display:none;align-items:center;gap:8px;margin-bottom:.75rem;font-weight:600}
 .edit-banner.show{display:flex}
 .perm-banner{background:#f8d7da;border:1px solid #f5c6cb;border-radius:6px;padding:8px 12px;font-size:12px;color:#721c24;margin-bottom:.75rem;display:none}
-
-/* ── COST ── */
+/* Cost */
 .cost-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:.5rem}
 .cost-item{background:#fafafa;border:1px solid #eee;border-radius:6px;padding:8px 10px}
 .cost-lbl{font-size:10px;color:#777;margin-bottom:4px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
@@ -98,33 +71,35 @@ body{font-family:Arial,sans-serif;background:#f0f0f0;color:#1a1a1a;font-size:14p
 .cost-total{background:#FFD700;border-radius:6px;padding:9px 13px;display:flex;justify-content:space-between;align-items:center;margin-top:.6rem}
 .cost-total-lbl{font-size:12px;font-weight:700;color:#5a4000}
 .cost-total-val{font-size:17px;font-weight:700;color:#000;font-family:monospace}
-
-/* ── TABLES ── */
-.ptbl{width:100%;border-collapse:collapse;font-size:12px;margin-top:.4rem;table-layout:fixed}
-.ptbl th{text-align:left;padding:6px 7px;border-bottom:2px solid #eee;color:#666;font-weight:700;font-size:10px;text-transform:uppercase;background:#fafafa}
-.ptbl td{padding:4px 6px;border-bottom:1px solid #f4f4f4}
+/* Parts table */
+.ptbl{width:100%;border-collapse:collapse;font-size:12px;margin-top:.4rem}
+.ptbl th{text-align:left;padding:6px 6px;border-bottom:2px solid #eee;color:#666;font-weight:700;font-size:10px;text-transform:uppercase;background:#fafafa;white-space:nowrap}
+.ptbl td{padding:4px 5px;border-bottom:1px solid #f4f4f4;vertical-align:middle}
 .ptbl td input,.ptbl td select{border:1px solid #ccc;border-radius:4px;padding:3px 5px;font-size:11px;width:100%;font-family:Arial,sans-serif;background:#fff}
-.ptbl td input:disabled,.ptbl td select:disabled{background:#f5f5f5;color:#aaa}
-.add-row{font-size:12px;color:#0070cc;background:none;border:none;cursor:pointer;padding:5px 0;display:flex;align-items:center;gap:4px;margin-top:3px;font-family:Arial,sans-serif}
-.add-row:disabled{color:#aaa;cursor:not-allowed}
-
-/* ── BUTTONS ── */
+.ptbl td input:focus,.ptbl td select:focus{outline:none;border-color:#FFD700}
+.dt-cell{display:flex;gap:3px;align-items:center;min-width:200px}
+.dt-cell input[type=date]{flex:1;font-size:10px;padding:3px 4px;border:1px solid #ccc;border-radius:4px}
+.dt-cell input[type=time]{width:75px;font-size:10px;padding:3px 4px;border:1px solid #ccc;border-radius:4px}
+.add-row{font-size:12px;color:#0070cc;background:none;border:none;cursor:pointer;padding:5px 0;font-family:Arial,sans-serif}
+.add-row:hover{color:#004f99}
+/* Buttons */
 .btn-row{display:flex;gap:7px;margin-top:.875rem;flex-wrap:wrap}
-.btn{padding:8px 15px;border-radius:6px;font-size:12px;cursor:pointer;font-family:Arial,sans-serif;display:flex;align-items:center;gap:5px;border:1px solid #ccc;background:#f5f5f5;color:#333;font-weight:600;transition:all .15s}
+.btn{padding:8px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-family:Arial,sans-serif;display:inline-flex;align-items:center;gap:5px;border:1px solid #ccc;background:#f5f5f5;color:#333;font-weight:600;transition:all .15s}
 .btn:hover{background:#e8e8e8}
 .btn:disabled{opacity:.4;cursor:not-allowed}
 .btn.primary{background:#FFD700;border-color:#c8a900;color:#000}
+.btn.primary:hover{background:#e6c200}
 .btn.success{background:#28a745;border-color:#1e7e34;color:#fff}
 .btn.danger{background:#dc3545;border-color:#bd2130;color:#fff}
 .btn.warning{background:#fd7e14;border-color:#d96000;color:#fff}
 .btn.info{background:#17a2b8;border-color:#117a8b;color:#fff}
+.btn.purple{background:#6f42c1;border-color:#5a32a3;color:#fff}
 .btn.small{padding:3px 9px;font-size:11px}
 .st{display:none;align-items:center;gap:7px;padding:9px 12px;border-radius:6px;font-size:12px;margin-top:.6rem;font-weight:600}
 .st.show{display:flex}
 .st.ok{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
 .st.err{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb}
-
-/* ── LOG ── */
+/* Log rows */
 .log-row{display:flex;align-items:center;gap:7px;padding:9px 11px;border-radius:6px;border:1px solid #e8e8e8;margin-bottom:5px;background:#fff}
 .log-row:hover{background:#fafafa}
 .log-ref{font-size:10px;font-family:monospace;background:#f5f5f5;border-radius:4px;padding:2px 7px;color:#666;white-space:nowrap;border:1px solid #ddd}
@@ -139,11 +114,13 @@ body{font-family:Arial,sans-serif;background:#f0f0f0;color:#1a1a1a;font-size:14p
 .b-qc{background:#e2e3e5;color:#383d41;border:1px solid #adb5bd}
 .cnt{font-size:10px;background:#007bff;color:#fff;border-radius:999px;padding:1px 7px;font-weight:700;margin-left:2px}
 .empty{text-align:center;padding:2rem 1rem;color:#bbb;font-size:13px}
+/* Tables */
 .wl-tbl{width:100%;border-collapse:collapse;font-size:12px}
 .wl-tbl th{text-align:left;padding:7px 9px;border-bottom:2px solid #eee;color:#666;font-weight:700;font-size:10px;text-transform:uppercase;background:#fafafa}
 .wl-tbl td{padding:6px 9px;border-bottom:1px solid #f4f4f4;font-size:12px}
 .wl-tbl tr:last-child td{border-bottom:none}
-.load-idle{color:#bbb;font-weight:700}.load-avail{color:#28a745;font-weight:700}.load-busy{color:#ffc107;font-weight:700}.load-over{color:#dc3545;font-weight:700}
+.load-idle{color:#bbb;font-weight:700}.load-avail{color:#28a745;font-weight:700}
+.load-busy{color:#ffc107;font-weight:700}.load-over{color:#dc3545;font-weight:700}
 .cbx{display:flex;align-items:center;gap:7px;font-size:12px;color:#444;cursor:pointer;padding:3px 0}
 .cbx input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:#FFD700}
 .diag-note{font-size:10px;color:#888;margin-top:3px;font-style:italic}
@@ -153,101 +130,71 @@ body{font-family:Arial,sans-serif;background:#f0f0f0;color:#1a1a1a;font-size:14p
 .filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.75rem;align-items:flex-end}
 .filter-bar select,.filter-bar input{font-size:12px;font-family:Arial,sans-serif;border:1px solid #ccc;border-radius:5px;padding:5px 8px;background:#fff}
 .filter-lbl{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:3px}
-
-/* ── DASHBOARD ── */
-.dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:1rem}
-.dash-card{background:#fff;border:1px solid #ddd;border-radius:8px;padding:1rem;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.04)}
-.dash-num{font-size:32px;font-weight:700;color:#FFD700;font-family:monospace}
-.dash-lbl{font-size:12px;color:#666;margin-top:4px}
-.dash-sub{font-size:11px;color:#aaa;margin-top:2px}
+/* Dashboard */
+.dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1rem}
+.dash-card{background:#fff;border:1px solid #ddd;border-radius:8px;padding:.875rem;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.dash-num{font-size:28px;font-weight:700;color:#FFD700;font-family:monospace;line-height:1.1}
+.dash-lbl{font-size:11px;color:#666;margin-top:4px;font-weight:600}
+.dash-sub{font-size:10px;color:#aaa;margin-top:2px}
+.dash-num.green{color:#28a745}.dash-num.blue{color:#0070cc}.dash-num.orange{color:#fd7e14}.dash-num.red{color:#dc3545}
 .bar-wrap{background:#fff;border:1px solid #ddd;border-radius:8px;padding:1rem;margin-bottom:.875rem}
-.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;font-size:12px}
-.bar-lbl{width:80px;text-align:right;color:#555;flex-shrink:0;font-size:11px}
-.bar-outer{flex:1;background:#f0f0f0;border-radius:4px;height:16px;overflow:hidden}
-.bar-inner{height:100%;border-radius:4px;transition:width .3s}
-.bar-val{width:36px;text-align:left;color:#333;font-weight:700;font-size:11px;flex-shrink:0}
-
-/* ── OVERDUE ── */
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:11px}
+.bar-lbl{width:90px;text-align:right;color:#555;flex-shrink:0;font-size:10px}
+.bar-outer{flex:1;background:#f0f0f0;border-radius:4px;height:14px;overflow:hidden}
+.bar-inner{height:100%;border-radius:4px;transition:width .4s}
+.bar-val{width:50px;text-align:left;color:#333;font-weight:700;font-size:10px;flex-shrink:0}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:.875rem}
+.kpi-card{background:#fff;border:1px solid #ddd;border-radius:8px;padding:.875rem;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.kpi-title{font-size:11px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.6rem;padding-bottom:.35rem;border-bottom:1px solid #f0f0f0}
+/* Overdue */
 .od-tbl{width:100%;border-collapse:collapse;font-size:12px}
 .od-tbl th{text-align:left;padding:7px 9px;border-bottom:2px solid #eee;color:#666;font-weight:700;font-size:10px;text-transform:uppercase;background:#fafafa}
 .od-tbl td{padding:6px 9px;border-bottom:1px solid #f4f4f4;font-size:12px}
 .overdue-row{background:#fff5f5}
-.countdown-ok{color:#28a745;font-weight:700}
-.countdown-warn{color:#ffc107;font-weight:700}
-.countdown-over{color:#dc3545;font-weight:700}
-
-/* ── USER MANAGEMENT ── */
+.countdown-ok{color:#28a745;font-weight:700}.countdown-warn{color:#ffc107;font-weight:700}.countdown-over{color:#dc3545;font-weight:700}
+/* User rows */
 .user-row{display:flex;align-items:center;gap:8px;padding:9px 11px;border-radius:6px;border:1px solid #e8e8e8;margin-bottom:5px;background:#fff}
 .user-info{flex:1;min-width:0}
-.user-name{font-size:13px;font-weight:700}
-.user-email{font-size:11px;color:#888}
-
-/* ── SYNC STATUS ── */
-.sync-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px}
-.sync-ok{background:#28a745}
-.sync-off{background:#dc3545}
-.sync-pending{background:#ffc107;animation:pulse .8s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-
-@media(max-width:640px){.g2,.g3,.g4{grid-template-columns:1fr}.cost-grid{grid-template-columns:1fr 1fr}.dash-grid{grid-template-columns:1fr 1fr}}
+.user-name{font-size:13px;font-weight:700}.user-email{font-size:11px;color:#888}
+/* Customer history modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal-box{background:#fff;border-radius:10px;padding:1.5rem;max-width:800px;width:95%;max-height:85vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:2px solid #FFD700}
+.modal-title{font-size:16px;font-weight:700}
+/* Tracker tabs */
+.tracker-tabs{display:flex;gap:4px;margin-bottom:.75rem}
+.tracker-tab{padding:6px 14px;border:1px solid #ccc;border-radius:5px;font-size:12px;cursor:pointer;background:#f5f5f5;font-weight:600}
+.tracker-tab.active{background:#FFD700;border-color:#c8a900;color:#000}
+.tracker-panel{display:none}.tracker-panel.active{display:block}
+@media(max-width:640px){.g2,.g3,.g4,.g5{grid-template-columns:1fr}.cost-grid{grid-template-columns:1fr 1fr}.dash-grid{grid-template-columns:1fr 1fr}.kpi-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
-<!-- ══════════ FIREBASE CONFIG SCREEN ══════════ -->
-<div id="cfg-screen">
-  <div class="cfg-box">
-    <div class="cfg-logo">KÄRCHER SERVICE</div>
-    <div class="cfg-title">Firebase Setup</div>
-    <div class="cfg-sub">Paste your Firebase project configuration below. You only need to do this once — the config is saved in this browser. <a href="https://console.firebase.google.com" target="_blank" style="color:#0070cc">Get your config from Firebase Console →</a></div>
-    <div class="cfg-note">
-      <strong>How to get your config:</strong><br>
-      1. Go to <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a><br>
-      2. Create a project → Add a Web App → Copy the firebaseConfig object<br>
-      3. Enable <strong>Authentication</strong> (Email/Password + Google) and <strong>Realtime Database</strong><br>
-      4. Paste each value below and click Connect
-    </div>
-    <div class="cfg-err" id="cfg-err"></div>
-    <div class="g2">
-      <div class="cfg-field"><label>API Key</label><input id="cfg-apiKey" placeholder="AIzaSy..."></div>
-      <div class="cfg-field"><label>Auth Domain</label><input id="cfg-authDomain" placeholder="your-app.firebaseapp.com"></div>
-      <div class="cfg-field"><label>Database URL</label><input id="cfg-dbURL" placeholder="https://your-app-default-rtdb.firebaseio.com"></div>
-      <div class="cfg-field"><label>Project ID</label><input id="cfg-projectId" placeholder="your-app-id"></div>
-      <div class="cfg-field"><label>Storage Bucket</label><input id="cfg-storageBucket" placeholder="your-app.appspot.com"></div>
-      <div class="cfg-field"><label>Messaging Sender ID</label><input id="cfg-messagingSenderId" placeholder="123456789"></div>
-      <div class="cfg-field full"><label>App ID</label><input id="cfg-appId" placeholder="1:123456789:web:abc..."></div>
-    </div>
-    <button class="btn primary" style="width:100%;justify-content:center;margin-top:.5rem;padding:10px" onclick="connectFirebase()">&#128293; Connect to Firebase</button>
-    <div style="margin-top:.75rem;text-align:center;font-size:11px;color:#aaa">Already configured? <a href="#" onclick="loadSavedCfg()" style="color:#0070cc">Load saved config</a></div>
-  </div>
-</div>
-
-<!-- ══════════ LOGIN SCREEN ══════════ -->
+<!-- LOGIN -->
 <div id="login-screen">
   <div class="login-box">
     <div class="login-logo">
-      <div class="logo-badge">KÄRCHER<br>SERVICE</div>
-      <div>
-        <div class="login-title">DVS International</div>
-        <div class="login-sub">Kärcher Service Centre — Staff Portal</div>
-      </div>
+      <div style="background:#FFD700;color:#000;font-weight:700;font-size:11px;padding:7px 10px;border-radius:6px;line-height:1.4;text-align:center">KÄRCHER<br>SERVICE</div>
+      <div><div style="font-size:16px;font-weight:700">DVS International</div><div style="font-size:11px;color:#666">Kärcher Service Centre — Staff Portal</div></div>
     </div>
     <div class="login-err" id="login-err"></div>
     <div class="login-field"><label>Email address</label><input type="email" id="login-email" placeholder="staff@dvsinternational.net"></div>
-    <div class="login-field"><label>Password</label><input type="password" id="login-password" placeholder="••••••••" onkeydown="if(event.key==='Enter') doLogin()"></div>
+    <div class="login-field"><label>Password</label><input type="password" id="login-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
     <button class="btn primary" style="width:100%;justify-content:center;padding:10px;margin-bottom:.5rem" onclick="doLogin()">&#128274; Sign in</button>
     <div class="divider">or</div>
     <button class="google-btn" onclick="doGoogleLogin()">
-      <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
       Sign in with Google
     </button>
-    <div style="margin-top:1rem;text-align:center;font-size:11px;color:#aaa">Contact your Admin to create your account</div>
-    <div style="margin-top:.5rem;text-align:center"><a href="#" onclick="showResetPassword()" style="font-size:11px;color:#0070cc">Forgot password?</a></div>
+    <div style="margin-top:.75rem;text-align:center;font-size:11px;color:#aaa">Contact your Admin to create your account</div>
+    <div style="margin-top:.4rem;text-align:center"><a href="#" onclick="showReset()" style="font-size:11px;color:#0070cc">Forgot password?</a></div>
   </div>
 </div>
 
-<!-- ══════════ MAIN APP ══════════ -->
-<div id="app">
+<!-- MAIN APP -->
+<div id="app" style="display:none">
 <div class="wrap">
 
 <div class="hdr">
@@ -257,11 +204,8 @@ body{font-family:Arial,sans-serif;background:#f0f0f0;color:#1a1a1a;font-size:14p
     <div class="hdr-sub">Dekk House, Providence Industrial Estate, Mahé, Seychelles &nbsp;·&nbsp; +248 2 527 230</div>
   </div>
   <div class="hdr-right">
-    <div style="font-size:11px;color:#888"><span class="sync-dot" id="sync-dot"></span><span id="sync-label">Connecting…</span></div>
-    <div class="user-chip" id="user-chip">
-      <span id="user-name-display">—</span>
-      <span class="role-badge" id="role-badge-display">—</span>
-    </div>
+    <div style="font-size:11px;color:#888"><span class="sync-dot" id="sync-dot"></span><span id="sync-lbl">Connecting…</span></div>
+    <div class="user-chip"><span id="user-disp">—</span><span class="role-badge" id="role-disp">—</span></div>
     <button class="btn small danger" onclick="doLogout()">Sign out</button>
   </div>
 </div>
@@ -271,12 +215,12 @@ body{font-family:Arial,sans-serif;background:#f0f0f0;color:#1a1a1a;font-size:14p
 <div class="tabs" id="main-tabs">
   <button class="tab active" id="tab-form" onclick="sw('form',this)">&#9998; New Job Card</button>
   <button class="tab" id="tab-log" onclick="sw('log',this)">&#9776; Job Log <span class="cnt" id="cnt-log">0</span></button>
+  <button class="tab" id="tab-customers" onclick="sw('customers',this)">&#128100; Customers</button>
   <button class="tab" id="tab-dash" onclick="sw('dash',this)">&#128200; Dashboard</button>
   <button class="tab" id="tab-workload" onclick="sw('workload',this)">&#128101; Workload</button>
-  <button class="tab" id="tab-parts" onclick="sw('parts',this)">&#128230; Parts <span class="cnt" id="cnt-parts">0</span></button>
-  <button class="tab" id="tab-spares" onclick="sw('spares',this)">&#128295; Spares Issued</button>
+  <button class="tab" id="tab-trackers" onclick="sw('trackers',this)">&#128230; Trackers <span class="cnt" id="cnt-parts">0</span></button>
   <button class="tab hidden" id="tab-users" onclick="sw('users',this)">&#128100; Users</button>
-  <button class="tab" id="tab-sla" onclick="sw('sla',this)">&#128203; SLA</button>
+  <button class="tab" id="tab-sla" onclick="sw('sla',this)">&#128203; SLA & SOPs</button>
 </div>
 
 <!-- ═══ NEW JOB CARD ═══ -->
@@ -311,12 +255,15 @@ body{font-family:Arial,sans-serif;background:#f0f0f0;color:#1a1a1a;font-size:14p
   <div class="card">
     <div class="sec">&#128100; Customer Information</div>
     <div class="g2">
-      <div class="f"><label>Customer name *</label><input type="text" id="cust-name" placeholder="Full name or company"></div>
+      <div class="f"><label>Customer name *</label>
+        <input type="text" id="cust-name" placeholder="Full name or company" list="cust-list" oninput="onCustInput()">
+        <datalist id="cust-list"></datalist>
+      </div>
       <div class="f"><label>Account type</label><select id="cust-acct"><option value="Retail">Retail</option><option value="Commercial">Commercial</option></select></div>
       <div class="f"><label>Phone</label><input type="text" id="cust-phone" placeholder="+248 ..."></div>
       <div class="f"><label>Email</label><input type="email" id="cust-email" placeholder="customer@email.com"></div>
-      <div class="f"><label>Company / Employer</label><input type="text" id="cust-company" placeholder="If applicable"></div>
-      <div class="f"><label>Contact person</label><input type="text" id="cust-contact" placeholder="If different from above"></div>
+      <div class="f"><label>Company / Employer</label><input type="text" id="cust-company"></div>
+      <div class="f"><label>Contact person</label><input type="text" id="cust-contact"></div>
     </div>
   </div>
 
@@ -328,7 +275,7 @@ body{font-family:Arial,sans-serif;background:#f0f0f0;color:#1a1a1a;font-size:14p
       <div class="f"><label>Serial number (optional)</label><input type="text" id="eq-sn" placeholder="e.g. 00123456" style="font-family:monospace"></div>
       <div class="f"><label>Machine type</label><input type="text" id="eq-type" placeholder="e.g. Pressure Washer"></div>
       <div class="f"><label>Year / Age</label><input type="text" id="eq-year" placeholder="e.g. 2022"></div>
-      <div class="f"><label>Colour / Markings</label><input type="text" id="eq-colour" placeholder="e.g. Yellow/Black"></div>
+      <div class="f"><label>Colour / Markings</label><input type="text" id="eq-colour"></div>
       <div class="f"><label>Condition on receipt</label>
         <select id="eq-condition"><option value="Good">Good</option><option value="Fair">Fair</option><option value="Poor">Poor</option><option value="Damaged">Damaged</option></select>
       </div>
@@ -359,7 +306,9 @@ body{font-family:Arial,sans-serif;background:#f0f0f0;color:#1a1a1a;font-size:14p
           <option value="Completed">Completed</option>
         </select>
       </div>
-      <div class="f"><label>Assigned technician</label><input type="text" id="job-tech" placeholder="Technician name"></div>
+      <div class="f"><label>Assigned technician</label>
+        <select id="job-tech"><option value="">— Select technician —</option></select>
+      </div>
     </div>
   </div>
 
@@ -374,18 +323,28 @@ body{font-family:Arial,sans-serif;background:#f0f0f0;color:#1a1a1a;font-size:14p
 
   <div class="card">
     <div class="sec">&#128230; Parts, Spares &amp; Accessories</div>
-    <table class="ptbl">
+    <div style="overflow-x:auto">
+    <table class="ptbl" id="parts-tbl">
       <thead><tr>
-        <th style="width:22px">#</th><th style="width:22%">Description / Item</th><th style="width:12%">Part number</th>
-        <th style="width:8%">Type</th><th style="width:9%">Purpose</th><th style="width:5%">Qty</th>
-        <th style="width:10%">Price (SCR)</th><th style="width:14%">Status / Issued to</th><th style="width:13%">Date &amp; Time</th>
+        <th style="width:22px">#</th>
+        <th style="min-width:140px">Description / Item</th>
+        <th style="min-width:100px">Part number</th>
+        <th style="width:80px">Type</th>
+        <th style="width:110px">Purpose</th>
+        <th style="width:44px">Qty</th>
+        <th style="width:85px">Price (SCR)</th>
+        <th style="min-width:110px">Status / Issued to</th>
+        <th style="min-width:210px">Date &amp; Time</th>
+        <th style="min-width:100px">Supplier</th>
         <th style="width:22px"></th>
       </tr></thead>
       <tbody id="parts-body"></tbody>
     </table>
-    <div style="display:flex;gap:12px;margin-top:4px">
-      <button class="add-row" id="btn-add-req" onclick="addPart('','','Part','Required')">+ Add required part</button>
-      <button class="add-row" id="btn-add-iss" onclick="addPart('','','Part','Issued to Tech')" style="color:#28a745">+ Add issued spare</button>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:5px">
+      <button class="add-row" onclick="addPart('','','Part','Required')">+ Add required part</button>
+      <button class="add-row" onclick="addPart('','','Part','Issued to Tech')" style="color:#28a745">+ Add issued spare</button>
+      <button class="add-row" onclick="addPart('','','Part','To Order')" style="color:#fd7e14">+ Add to order</button>
     </div>
   </div>
 
@@ -411,7 +370,8 @@ body{font-family:Arial,sans-serif;background:#f0f0f0;color:#1a1a1a;font-size:14p
         <input type="number" id="service-cost" class="cost-inp" value="0" min="0" step="0.01" oninput="calcTotal()">
       </div>
       <div class="cost-item"><div class="cost-lbl">Labour (SCR)</div><input type="number" id="labour-cost" class="cost-inp" value="0" min="0" step="0.01" oninput="calcTotal()"></div>
-      <div class="cost-item"><div class="cost-lbl">Spare parts total (SCR)</div><div class="cost-ro" id="parts-subtotal">0.00</div></div>
+      <div class="cost-item"><div class="cost-lbl">Required parts total (SCR)</div><div class="cost-ro" id="parts-subtotal">0.00</div></div>
+      <div class="cost-item"><div class="cost-lbl">Issued to tech total (SCR)</div><div class="cost-ro" id="issued-subtotal">0.00</div></div>
       <div class="cost-item"><div class="cost-lbl">Accessories total (SCR)</div><div class="cost-ro" id="acc-subtotal">0.00</div></div>
     </div>
     <div class="cost-total"><div class="cost-total-lbl">Grand total (all inclusive)</div><div class="cost-total-val" id="grand-total">SCR 0.00</div></div>
@@ -455,15 +415,13 @@ body{font-family:Arial,sans-serif;background:#f0f0f0;color:#1a1a1a;font-size:14p
   </div>
   <div class="filter-bar">
     <div><span class="filter-lbl">Status</span>
-      <select id="log-f-status" onchange="renderLog()">
-        <option value="">All</option><option>Received</option><option>In Diagnosis</option><option>In Repair</option>
-        <option>Awaiting Parts</option><option>QC Check</option><option>Ready for Collection</option><option>Completed</option>
-      </select>
+      <select id="log-f-status" onchange="renderLog()"><option value="">All</option><option>Received</option><option>In Diagnosis</option><option>In Repair</option><option>Awaiting Parts</option><option>QC Check</option><option>Ready for Collection</option><option>Completed</option></select>
     </div>
     <div><span class="filter-lbl">Priority</span>
-      <select id="log-f-priority" onchange="renderLog()">
-        <option value="">All</option><option>STANDARD</option><option>HIGH</option><option>URGENT</option><option>WARRANTY</option>
-      </select>
+      <select id="log-f-priority" onchange="renderLog()"><option value="">All</option><option>STANDARD</option><option>HIGH</option><option>URGENT</option><option>WARRANTY</option></select>
+    </div>
+    <div><span class="filter-lbl">Technician</span>
+      <select id="log-f-tech" onchange="renderLog()"><option value="">All</option></select>
     </div>
     <div><span class="filter-lbl">Date from</span><input type="date" id="log-f-from" onchange="renderLog()"></div>
     <div><span class="filter-lbl">Date to</span><input type="date" id="log-f-to" onchange="renderLog()"></div>
@@ -473,13 +431,37 @@ body{font-family:Arial,sans-serif;background:#f0f0f0;color:#1a1a1a;font-size:14p
   <div id="log-list"></div>
 </div>
 
+<!-- ═══ CUSTOMERS ═══ -->
+<div class="panel" id="panel-customers">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:.75rem">
+    <input class="search-bar" id="cust-search" placeholder="&#128269; Search customers..." oninput="renderCustomers()" style="flex:1;margin-bottom:0">
+  </div>
+  <div id="cust-list-display"></div>
+</div>
+
 <!-- ═══ DASHBOARD ═══ -->
 <div class="panel" id="panel-dash">
-  <div class="dash-grid" id="dash-stats"></div>
-  <div class="bar-wrap"><div class="sec">Jobs by status</div><div id="status-bars"></div></div>
-  <div class="bar-wrap"><div class="sec">Daily — last 14 days</div><div id="daily-bars"></div></div>
-  <div class="bar-wrap"><div class="sec">Weekly — last 8 weeks</div><div id="weekly-bars"></div></div>
-  <div class="bar-wrap"><div class="sec">Monthly — last 12 months</div><div id="monthly-bars"></div></div>
+  <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
+    <div style="font-size:13px;font-weight:700;color:#555">View:</div>
+    <button class="btn small active" id="dash-view-btn" onclick="toggleDashView()" style="background:#FFD700;border-color:#c8a900">&#128200; Switch to Detailed</button>
+  </div>
+  <div id="dash-basic">
+    <div class="dash-grid" id="dash-stats"></div>
+    <div class="dash-grid" id="dash-fin-stats" style="margin-bottom:1rem"></div>
+    <div class="bar-wrap"><div class="sec">Jobs by status</div><div id="status-bars"></div></div>
+    <div class="bar-wrap"><div class="sec">&#128197; Daily jobs — last 14 days</div><div id="daily-bars"></div></div>
+    <div class="bar-wrap"><div class="sec">&#128197; Weekly jobs — last 8 weeks</div><div id="weekly-bars"></div></div>
+    <div class="bar-wrap"><div class="sec">&#128197; Monthly jobs — last 12 months</div><div id="monthly-bars"></div></div>
+  </div>
+  <div id="dash-detailed" style="display:none">
+    <div class="kpi-grid" id="kpi-financial"></div>
+    <div class="kpi-grid" id="kpi-operational"></div>
+    <div class="bar-wrap"><div class="sec">&#128200; Revenue by period</div><div id="revenue-bars"></div></div>
+    <div class="bar-wrap"><div class="sec">&#128295; Most repaired machine models (top 10)</div><div id="model-bars"></div></div>
+    <div class="bar-wrap"><div class="sec">&#128230; Most requested parts (top 10)</div><div id="parts-bars"></div></div>
+    <div class="bar-wrap"><div class="sec">&#128101; Jobs per technician</div><div id="tech-bars"></div></div>
+    <div class="kpi-grid" id="kpi-customers"></div>
+  </div>
 </div>
 
 <!-- ═══ WORKLOAD ═══ -->
@@ -499,182 +481,272 @@ body{font-family:Arial,sans-serif;background:#f0f0f0;color:#1a1a1a;font-size:14p
   <div class="card"><div class="sec">&#128197; Today's Jobs</div><div id="daily-list"></div></div>
 </div>
 
-<!-- ═══ PARTS TRACKER ═══ -->
-<div class="panel" id="panel-parts">
-  <div class="card">
-    <div class="sec">&#128230; Parts Awaited Tracker</div>
-    <div class="filter-bar">
-      <select id="parts-filter-status" onchange="renderParts()"><option value="">All statuses</option><option>Ordered</option><option>Awaiting import</option><option>In stock</option><option>Received</option></select>
-      <select id="parts-filter-type" onchange="renderParts()"><option value="">All types</option><option value="Part">Parts only</option><option value="Accessory">Accessories only</option></select>
-      <input id="parts-search" placeholder="&#128269; Search..." style="font-size:12px;font-family:Arial,sans-serif;border:1px solid #ccc;border-radius:5px;padding:5px 8px;background:#fff" oninput="renderParts()">
-    </div>
-    <div style="overflow-x:auto">
-      <table class="wl-tbl" id="pt-table" style="min-width:800px">
-        <thead><tr><th>Job ref</th><th>Customer</th><th>Phone</th><th>Machine</th><th>Part No.</th><th>Serial</th><th>Description</th><th>Type</th><th>Qty</th><th>Price</th><th>Status</th></tr></thead>
-        <tbody id="pt-body"></tbody>
-      </table>
-    </div>
-    <div class="empty" id="pt-empty" style="display:none">No parts match filters.</div>
+<!-- ═══ TRACKERS ═══ -->
+<div class="panel" id="panel-trackers">
+  <div class="tracker-tabs">
+    <button class="tracker-tab active" onclick="swTracker('issued',this)">&#128295; Issued to Technicians</button>
+    <button class="tracker-tab" onclick="swTracker('order',this)">&#128230; To Order / Import</button>
+    <button class="tracker-tab" onclick="swTracker('local',this)">&#127981; Locally Sourced</button>
   </div>
-  <div style="margin-top:.6rem"><button class="btn primary" onclick="downloadPartsTracker()">&#8659; Download (.xls)</button></div>
-</div>
 
-<!-- ═══ SPARES ISSUED ═══ -->
-<div class="panel" id="panel-spares">
-  <div class="card">
-    <div class="sec">&#128295; Spares Issued to Technicians</div>
-    <div class="filter-bar">
-      <input id="spares-search" placeholder="&#128269; Search..." style="font-size:12px;font-family:Arial,sans-serif;border:1px solid #ccc;border-radius:5px;padding:5px 8px;background:#fff;flex:1" oninput="renderSpares()">
+  <!-- Issued to Tech -->
+  <div class="tracker-panel active" id="tracker-issued">
+    <div class="card">
+      <div class="sec">&#128295; Spares Issued to Technicians</div>
+      <div class="filter-bar">
+        <input id="issued-search" placeholder="&#128269; Search..." style="font-size:12px;font-family:Arial,sans-serif;border:1px solid #ccc;border-radius:5px;padding:5px 8px;background:#fff;flex:1" oninput="renderTrackers()">
+        <select id="issued-f-tech" onchange="renderTrackers()" style="font-size:12px;font-family:Arial,sans-serif;border:1px solid #ccc;border-radius:5px;padding:5px 8px;background:#fff"><option value="">All technicians</option></select>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="wl-tbl" style="min-width:750px">
+          <thead><tr><th>Job ref</th><th>Customer</th><th>Machine</th><th>Item / Part</th><th>Part number</th><th>Qty</th><th>Issued to</th><th>Date &amp; Time</th><th>Supplier</th></tr></thead>
+          <tbody id="issued-body"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="issued-empty" style="display:none">No issued spares recorded.</div>
     </div>
-    <div style="overflow-x:auto">
-      <table class="wl-tbl" id="spares-table" style="min-width:700px">
-        <thead><tr><th>Job ref</th><th>Customer</th><th>Machine</th><th>Item / Part</th><th>Part number</th><th>Qty</th><th>Issued to</th><th>Date &amp; Time</th></tr></thead>
-        <tbody id="spares-body"></tbody>
-      </table>
-    </div>
-    <div class="empty" id="spares-empty" style="display:none">No spares issued records.</div>
+    <button class="btn primary" onclick="downloadTracker('issued')">&#8659; Download Issued Spares (.xls)</button>
   </div>
-</div>
 
-<!-- ═══ USER MANAGEMENT (Admin only) ═══ -->
-<div class="panel" id="panel-users">
-  <div class="card">
-    <div class="sec">&#128100; User Management — Admin only</div>
-    <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;align-items:flex-end">
-      <div class="f" style="flex:1;min-width:160px"><label>Email</label><input type="email" id="new-user-email" placeholder="staff@dvs.net"></div>
-      <div class="f" style="min-width:140px"><label>Display name</label><input type="text" id="new-user-name" placeholder="Full name"></div>
-      <div class="f"><label>Role</label>
-        <select id="new-user-role">
-          <option value="admin">Admin</option><option value="manager">Manager</option>
-          <option value="technician" selected>Technician</option><option value="viewer">Viewer</option>
+  <!-- To Order -->
+  <div class="tracker-panel" id="tracker-order">
+    <div class="card">
+      <div class="sec">&#128230; Parts to Order / Import</div>
+      <div class="filter-bar">
+        <input id="order-search" placeholder="&#128269; Search..." style="font-size:12px;font-family:Arial,sans-serif;border:1px solid #ccc;border-radius:5px;padding:5px 8px;background:#fff;flex:1" oninput="renderTrackers()">
+        <select id="order-f-status" onchange="renderTrackers()" style="font-size:12px;font-family:Arial,sans-serif;border:1px solid #ccc;border-radius:5px;padding:5px 8px;background:#fff">
+          <option value="">All statuses</option><option>Ordered</option><option>Awaiting import</option><option>In stock</option><option>Received</option>
         </select>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="wl-tbl" style="min-width:850px">
+          <thead><tr><th>Job ref</th><th>Customer</th><th>Machine</th><th>Description</th><th>Part number</th><th>Qty</th><th>Price (SCR)</th><th>Status</th><th>Supplier</th><th>Source</th></tr></thead>
+          <tbody id="order-body"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="order-empty" style="display:none">No parts to order.</div>
+    </div>
+    <button class="btn primary" onclick="downloadTracker('order')">&#8659; Download Order List (.xls)</button>
+  </div>
+
+  <!-- Locally Sourced -->
+  <div class="tracker-panel" id="tracker-local">
+    <div class="card">
+      <div class="sec">&#127981; Locally Sourced Parts</div>
+      <div class="filter-bar">
+        <input id="local-search" placeholder="&#128269; Search..." style="font-size:12px;font-family:Arial,sans-serif;border:1px solid #ccc;border-radius:5px;padding:5px 8px;background:#fff;flex:1" oninput="renderTrackers()">
+      </div>
+      <div style="overflow-x:auto">
+        <table class="wl-tbl" style="min-width:750px">
+          <thead><tr><th>Job ref</th><th>Customer</th><th>Machine</th><th>Description</th><th>Part number</th><th>Qty</th><th>Price (SCR)</th><th>Supplier</th><th>Status</th></tr></thead>
+          <tbody id="local-body"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="local-empty" style="display:none">No locally sourced parts recorded.</div>
+    </div>
+    <button class="btn primary" onclick="downloadTracker('local')">&#8659; Download Local Sourcing List (.xls)</button>
+  </div>
+</div>
+
+<!-- ═══ USERS (Admin only) ═══ -->
+<div class="panel" id="panel-users">
+  <!-- Technicians sub-section -->
+  <div class="card">
+    <div class="sec">&#128295; Technician Roster</div>
+    <div style="display:flex;gap:8px;margin-bottom:.75rem;flex-wrap:wrap;align-items:flex-end">
+      <div class="f" style="flex:1;min-width:130px"><label>Name *</label><input type="text" id="tech-name" placeholder="Full name"></div>
+      <div class="f" style="min-width:130px"><label>Phone</label><input type="text" id="tech-phone" placeholder="+248 ..."></div>
+      <div class="f" style="min-width:160px"><label>Email</label><input type="email" id="tech-email" placeholder="tech@dvs.net"></div>
+      <div class="f"><label>Specialisation</label>
+        <select id="tech-spec">
+          <option>General Technician</option><option>Pressure Washers</option><option>Industrial Sweepers</option>
+          <option>Scrubber Dryers</option><option>High Pressure</option><option>Senior Technician</option>
+        </select>
+      </div>
+      <button class="btn success" onclick="addTechnician()" style="align-self:flex-end">+ Add Technician</button>
+    </div>
+    <div class="st" id="tech-st"></div>
+    <div id="tech-list"></div>
+  </div>
+  <!-- Staff accounts -->
+  <div class="card">
+    <div class="sec">&#128100; Staff Portal Accounts</div>
+    <div style="display:flex;gap:8px;margin-bottom:.75rem;flex-wrap:wrap;align-items:flex-end">
+      <div class="f" style="flex:1;min-width:140px"><label>Email</label><input type="email" id="new-user-email" placeholder="staff@dvs.net"></div>
+      <div class="f" style="min-width:130px"><label>Display name</label><input type="text" id="new-user-name" placeholder="Full name"></div>
+      <div class="f"><label>Role</label>
+        <select id="new-user-role"><option value="admin">Admin</option><option value="manager">Manager</option><option value="technician" selected>Technician</option><option value="viewer">Viewer</option></select>
       </div>
       <div class="f"><label>Password</label><input type="password" id="new-user-pass" placeholder="Min 6 chars"></div>
       <div class="f"><label>See all jobs</label>
-        <select id="new-user-visibility">
-          <option value="all">All jobs</option><option value="own">Own jobs only</option>
-        </select>
+        <select id="new-user-vis"><option value="all">All jobs</option><option value="own">Own only</option></select>
       </div>
-      <button class="btn success" onclick="createUser()" style="align-self:flex-end">+ Create user</button>
+      <button class="btn success" onclick="createUser()" style="align-self:flex-end">+ Create account</button>
     </div>
     <div class="st" id="users-st"></div>
     <div id="users-list"></div>
   </div>
 </div>
 
-<!-- ═══ SLA ═══ -->
+<!-- ═══ SLA & SOPs ═══ -->
 <div class="panel" id="panel-sla">
   <div class="card">
     <div class="sec">&#9200; Service Response Commitments</div>
-    <table class="wl-tbl"><thead><tr><th>Service type</th><th>Customer category</th><th>Diagnosis target</th><th>Repair target</th></tr></thead>
+    <table class="wl-tbl"><thead><tr><th>Service type</th><th>Customer category</th><th>Diagnosis target</th><th>Repair target</th><th>Follow-up</th></tr></thead>
     <tbody>
-      <tr><td style="font-weight:700">Urgent Repair</td><td>All</td><td>Within 4 business hours</td><td>Same day / 24 hrs</td></tr>
-      <tr><td style="font-weight:700">High Priority</td><td>Commercial</td><td>Within 8 business hours</td><td>Within 48 hours</td></tr>
-      <tr><td style="font-weight:700">Standard Repair</td><td>All</td><td>Within 1 business day</td><td>Within 5 business days</td></tr>
-      <tr><td style="font-weight:700">Preventive Maintenance</td><td>Contract</td><td>Pre-agreed schedule</td><td>Per maintenance plan</td></tr>
-      <tr><td style="font-weight:700">Warranty Work</td><td>All</td><td>Within 1 business day</td><td>Per Kärcher warranty terms</td></tr>
+      <tr><td style="font-weight:700">Urgent Repair</td><td>All customers</td><td>Within 4 business hours</td><td>Same day / 24 hrs</td><td>Immediate notification on completion</td></tr>
+      <tr><td style="font-weight:700">High Priority</td><td>Commercial accounts</td><td>Within 8 business hours</td><td>Within 48 hours</td><td>Daily status update to customer</td></tr>
+      <tr><td style="font-weight:700">Standard Repair</td><td>All customers</td><td>Within 1 business day</td><td>Within 5 business days</td><td>Update if delay occurs</td></tr>
+      <tr><td style="font-weight:700">Preventive Maintenance</td><td>Contract accounts</td><td>Pre-agreed schedule</td><td>Per maintenance plan</td><td>Completion report issued</td></tr>
+      <tr><td style="font-weight:700">Warranty Work</td><td>All customers</td><td>Within 1 business day</td><td>Per Kärcher warranty terms</td><td>Warranty claim documentation issued</td></tr>
+      <tr><td style="font-weight:700">Assessment / Inspection</td><td>All customers</td><td>Same day (if booked)</td><td>Report within 24 hrs</td><td>Written report with recommendations</td></tr>
+      <tr><td style="font-weight:700">Installation</td><td>All customers</td><td>Pre-agreed booking</td><td>Per installation scope</td><td>Site sign-off and handover checklist</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card">
+    <div class="sec">&#128172; Customer Communication Standards</div>
+    <table class="wl-tbl"><thead><tr><th>Stage</th><th>Commitment</th><th>Method</th><th>Responsible</th></tr></thead>
+    <tbody>
+      <tr><td style="font-weight:700">On drop-off</td><td>Delivery note &amp; job card reference issued. Estimated return date confirmed.</td><td>In-person + WhatsApp/SMS</td><td>Reception / Front desk</td></tr>
+      <tr><td style="font-weight:700">After diagnosis</td><td>Customer contacted with findings and written quotation before any work proceeds.</td><td>Call + Email/WhatsApp</td><td>Technician / Manager</td></tr>
+      <tr><td style="font-weight:700">Quotation approval</td><td>Written approval received before ordering parts or proceeding with repair.</td><td>Email / WhatsApp reply</td><td>Manager</td></tr>
+      <tr><td style="font-weight:700">Parts delay</td><td>Customer notified same business day a delay is identified. New ETA provided.</td><td>Call + WhatsApp</td><td>Parts coordinator</td></tr>
+      <tr><td style="font-weight:700">On completion</td><td>Customer contacted immediately when machine is ready. Collection arranged.</td><td>Call + WhatsApp</td><td>Technician / Reception</td></tr>
+      <tr><td style="font-weight:700">Commercial accounts</td><td>Weekly open-jobs status report sent every Friday by 4PM.</td><td>Email report</td><td>Manager</td></tr>
+      <tr><td style="font-weight:700">Post-collection</td><td>Follow-up call/message within 3 days to confirm satisfaction.</td><td>Call / WhatsApp</td><td>Manager</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card">
+    <div class="sec">&#128203; Standard Operating Procedures (SOPs)</div>
+    <table class="wl-tbl"><thead><tr><th>SOP</th><th>Steps</th></tr></thead>
+    <tbody>
+      <tr><td style="font-weight:700;white-space:nowrap">Machine intake</td><td>1. Greet customer &amp; inspect machine physically &nbsp;2. Complete delivery note &amp; job card &nbsp;3. Note all accessories received &nbsp;4. Assign job reference &nbsp;5. Give customer their copy of delivery note</td></tr>
+      <tr><td style="font-weight:700;white-space:nowrap">Diagnosis</td><td>1. Assign to technician &amp; update status to "In Diagnosis" &nbsp;2. Document root cause in findings &nbsp;3. List all parts required &nbsp;4. Prepare quotation &nbsp;5. Contact customer for approval before proceeding</td></tr>
+      <tr><td style="font-weight:700;white-space:nowrap">Parts ordering</td><td>1. Add parts to order tracker &nbsp;2. Contact authorised Kärcher supplier &nbsp;3. Record supplier info, ETA &amp; cost &nbsp;4. Update status to "Awaiting import" or "Ordered" &nbsp;5. Notify customer of any delay</td></tr>
+      <tr><td style="font-weight:700;white-space:nowrap">Repair</td><td>1. Update status to "In Repair" after approval &nbsp;2. Issue spares to technician — record in tracker &nbsp;3. Technician completes repair &nbsp;4. Update to "QC Check" &nbsp;5. QC inspection completed by senior staff</td></tr>
+      <tr><td style="font-weight:700;white-space:nowrap">QC &amp; handover</td><td>1. Machine tested under load &nbsp;2. QC passed — update to "Ready for Collection" &nbsp;3. Contact customer &nbsp;4. Customer collects — verify signature on job card &nbsp;5. Invoice issued &amp; payment collected &nbsp;6. Mark as "Completed"</td></tr>
+      <tr><td style="font-weight:700;white-space:nowrap">Warranty claim</td><td>1. Verify warranty validity with serial number &nbsp;2. Create WR job card &nbsp;3. Document fault with photos &nbsp;4. Submit claim to Kärcher &nbsp;5. Repair per Kärcher warranty terms &nbsp;6. File claim documentation</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card">
+    <div class="sec">&#128179; Diagnostics Fee Guide</div>
+    <table class="wl-tbl"><thead><tr><th>Category</th><th>Equipment examples</th><th>Fee type</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td style="font-weight:700">Domestic / Home &amp; Garden</td><td>K2–K7 pressure washers, garden vacuums, window vacs, steam cleaners</td><td>Domestic rate</td><td>Applied on receipt of machine</td></tr>
+      <tr><td style="font-weight:700">Professional / Commercial</td><td>HD/HDS series, BR/BD scrubber dryers, KM sweepers, industrial washers</td><td>Professional rate</td><td>Higher rate — complex equipment</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card">
+    <div class="sec">&#35; Job Reference Guide</div>
+    <div style="font-size:13px;font-family:monospace;background:#fff8d6;padding:10px 14px;border-radius:5px;margin-bottom:.75rem;color:#7a6000;border:1px solid #e6c200">DVS-KSC-[YEAR]-[CATEGORY]-[SEQUENCE]-[OPTIONAL CUSTOMER CODE]</div>
+    <table class="wl-tbl"><thead><tr><th>Code</th><th>Category</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><strong>SV</strong></td><td>Service / Repair</td><td style="font-family:monospace;font-size:11px">DVS-KSC-26-SV-0001</td></tr>
+      <tr><td><strong>WR</strong></td><td>Warranty Repair</td><td style="font-family:monospace;font-size:11px">DVS-KSC-26-WR-0012</td></tr>
+      <tr><td><strong>PM</strong></td><td>Preventive Maintenance</td><td style="font-family:monospace;font-size:11px">DVS-KSC-26-PM-0003-HTL</td></tr>
+      <tr><td><strong>IN</strong></td><td>Installation</td><td style="font-family:monospace;font-size:11px">DVS-KSC-26-IN-0005-GOV</td></tr>
+      <tr><td><strong>SP</strong></td><td>Spare Parts Supply</td><td style="font-family:monospace;font-size:11px">DVS-KSC-26-SP-0008</td></tr>
+      <tr><td><strong>AS</strong></td><td>Assessment / Inspection</td><td style="font-family:monospace;font-size:11px">DVS-KSC-26-AS-0002-COM</td></tr>
+      <tr><td><strong>CL</strong></td><td>Cleaning / Demo / Hire</td><td style="font-family:monospace;font-size:11px">DVS-KSC-26-CL-0004</td></tr>
+      <tr><td><strong>TR</strong></td><td>Training</td><td style="font-family:monospace;font-size:11px">DVS-KSC-26-TR-0001</td></tr>
+    </tbody></table>
+    <div style="margin-top:.6rem;font-size:12px;color:#666">Customer codes: <span style="font-family:monospace;color:#7a6000">GOV</span> Government &nbsp;|&nbsp; <span style="font-family:monospace;color:#7a6000">HTL</span> Hotel/Resort &nbsp;|&nbsp; <span style="font-family:monospace;color:#7a6000">COM</span> Commercial &nbsp;|&nbsp; <span style="font-family:monospace;color:#7a6000">RTL</span> Retail &nbsp;|&nbsp; <span style="font-family:monospace;color:#7a6000">NGO</span> NGO/Other</div>
+  </div>
+  <div class="card">
+    <div class="sec">&#128218; Service Quality Standards</div>
+    <table class="wl-tbl"><thead><tr><th>Standard</th><th>Requirement</th><th>Target</th></tr></thead>
+    <tbody>
+      <tr><td style="font-weight:700">First-time fix rate</td><td>Machine repaired correctly on first attempt without return visit</td><td>&gt; 85%</td></tr>
+      <tr><td style="font-weight:700">Customer satisfaction</td><td>Positive feedback from customer at collection</td><td>&gt; 90%</td></tr>
+      <tr><td style="font-weight:700">On-time delivery</td><td>Machine ready by promised return date</td><td>&gt; 80%</td></tr>
+      <tr><td style="font-weight:700">Quotation response</td><td>Quotation sent to customer after diagnosis</td><td>Within 24 hrs</td></tr>
+      <tr><td style="font-weight:700">Parts availability</td><td>Common parts for top 20 models in stock</td><td>Reviewed monthly</td></tr>
+      <tr><td style="font-weight:700">Job card completion</td><td>All fields completed before job is marked complete</td><td>100%</td></tr>
+      <tr><td style="font-weight:700">Warranty compliance</td><td>All warranty claims submitted within Kärcher timelines</td><td>100%</td></tr>
     </tbody></table>
   </div>
 </div>
 
-</div><!-- end wrap -->
-</div><!-- end app -->
+</div>
+</div>
+
+<!-- Customer History Modal -->
+<div class="modal-overlay" id="cust-modal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <div>
+        <div class="modal-title" id="modal-cust-name"></div>
+        <div style="font-size:12px;color:#888;margin-top:2px" id="modal-cust-meta"></div>
+      </div>
+      <button class="btn small danger" onclick="closeModal()">&#10005; Close</button>
+    </div>
+    <div id="modal-cust-body"></div>
+  </div>
+</div>
 
 <script>
-// ══════════════════════════════════════════════
-//  GLOBALS
-// ══════════════════════════════════════════════
-var db, auth, currentUser=null, currentProfile=null;
-var jobs={}, counters={SV:0,WR:0,PM:0,IN:0,SP:0,AS:0,CL:0,TR:0};
+// ══════════════════════════════════════════
+// GLOBALS
+// ══════════════════════════════════════════
+var db,auth,currentUser=null,currentProfile=null;
+var jobs={},counters={SV:0,WR:0,PM:0,IN:0,SP:0,AS:0,CL:0,TR:0};
+var technicians={},users={};
 var editingRef=null;
 var YR=new Date().getFullYear().toString().slice(-2);
-var CFG_KEY='dvs_firebase_cfg';
+var dashDetailed=false;
 
-// ══════════════════════════════════════════════
-//  FIREBASE CONFIG
-// ══════════════════════════════════════════════
-function connectFirebase(){
+var PERMS={
+  admin:{create:true,editAny:true,editOwn:true,delete:true,download:true,manageUsers:true},
+  manager:{create:true,editAny:true,editOwn:true,delete:false,download:true,manageUsers:false},
+  technician:{create:true,editAny:false,editOwn:true,delete:false,download:true,manageUsers:false},
+  viewer:{create:false,editAny:false,editOwn:false,delete:false,download:true,manageUsers:false}
+};
+function can(a){var r=(currentProfile&&currentProfile.role)||'viewer';return !!(PERMS[r]&&PERMS[r][a]);}
+function canEdit(j){if(can('editAny'))return true;if(can('editOwn')&&j&&j.createdBy===currentUser.uid)return true;return false;}
+function showPerm(){var b=document.getElementById('perm-banner');b.style.display='block';setTimeout(function(){b.style.display='none';},3000);}
+function visibleJobs(){
+  var arr=Object.values(jobs);
+  if(!currentProfile||currentProfile.visibility==='all')return arr;
+  return arr.filter(function(j){return j.createdBy===currentUser.uid||j.tech===(currentProfile&&currentProfile.name);});
+}
+
+// ══════════════════════════════════════════
+// FIREBASE INIT
+// ══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',function(){
   var cfg={
-    apiKey:v('cfg-apiKey'),authDomain:v('cfg-authDomain'),databaseURL:v('cfg-dbURL'),
-    projectId:v('cfg-projectId'),storageBucket:v('cfg-storageBucket'),
-    messagingSenderId:v('cfg-messagingSenderId'),appId:v('cfg-appId')
+    apiKey:"AIzaSyDhmjHQN_PYRSToRQ8sDfmxALiErLsVVdE",
+    authDomain:"dvs-international-ksc.firebaseapp.com",
+    databaseURL:"https://dvs-international-ksc-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId:"dvs-international-ksc",
+    storageBucket:"dvs-international-ksc.firebasestorage.app",
+    messagingSenderId:"657872368628",
+    appId:"1:657872368628:web:16132cc11cf190046f7fa1"
   };
-  var missing=Object.keys(cfg).filter(function(k){return !cfg[k];});
-  if(missing.length){showCfgErr('Please fill in all fields.');return;}
   try{
-    localStorage.setItem(CFG_KEY,JSON.stringify(cfg));
-    initFirebase(cfg);
-  }catch(e){showCfgErr('Error: '+e.message);}
-}
-function loadSavedCfg(){
-  var saved=localStorage.getItem(CFG_KEY);
-  if(!saved){alert('No saved config found.');return;}
-  try{initFirebase(JSON.parse(saved));}catch(e){showCfgErr('Saved config error: '+e.message);}
-}
-function showCfgErr(m){var el=document.getElementById('cfg-err');el.textContent=m;el.style.display='block';}
-
-function initFirebase(cfg){
-  try{
-    if(firebase.apps.length) firebase.app().delete();
     firebase.initializeApp(cfg);
     db=firebase.database();
     auth=firebase.auth();
-    document.getElementById('cfg-screen').style.display='none';
     document.getElementById('login-screen').style.display='flex';
     auth.onAuthStateChanged(onAuthChange);
-  }catch(e){showCfgErr('Firebase init error: '+e.message);}
-}
-
-function firebaseReady() {
-  var cfg = {
-    apiKey: "AIzaSyDhmjHQN_PYRSToRQ8sDfmxALiErLsVVdE",
-    authDomain: "dvs-international-ksc.firebaseapp.com",
-    databaseURL: "https://dvs-international-ksc-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "dvs-international-ksc",
-    storageBucket: "dvs-international-ksc.firebasestorage.app",
-    messagingSenderId: "657872368628",
-    appId: "1:657872368628:web:16132cc11cf190046f7fa1"
-  };
-  document.getElementById('cfg-screen').style.display = 'none';
-  initFirebase(cfg);
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  // Attach button listeners after DOM loads
-  var btnConnect = document.getElementById('btn-connect');
-  var linkSaved = document.getElementById('link-saved-cfg');
-  if(btnConnect) btnConnect.addEventListener('click', connectFirebase);
-  if(linkSaved) linkSaved.addEventListener('click', function(e){ e.preventDefault(); loadSavedCfg(); });
-  // Auto-connect with hardcoded config
-  firebaseReady();
+  }catch(e){alert('Firebase init error: '+e.message);}
 });
 
-// ══════════════════════════════════════════════
-//  AUTH
-// ══════════════════════════════════════════════
-function doLogin(){
-  var email=v('login-email'),pass=v('login-password');
-  if(!email||!pass){showLoginErr('Please enter email and password.');return;}
-  auth.signInWithEmailAndPassword(email,pass).catch(function(e){showLoginErr(e.message);});
-}
-function doGoogleLogin(){
-  var provider=new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider).catch(function(e){showLoginErr(e.message);});
-}
+// ══════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════
+function doLogin(){var e=v('login-email'),p=v('login-password');if(!e||!p){showLoginErr('Please enter email and password.');return;}auth.signInWithEmailAndPassword(e,p).catch(function(err){showLoginErr(err.message);});}
+function doGoogleLogin(){auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(function(err){showLoginErr(err.message);});}
 function doLogout(){auth.signOut();}
 function showLoginErr(m){var el=document.getElementById('login-err');el.textContent=m;el.style.display='block';}
-function showResetPassword(){
-  var email=prompt('Enter your email address to reset your password:');
-  if(!email) return;
-  auth.sendPasswordResetEmail(email).then(function(){alert('Password reset email sent. Check your inbox.');}).catch(function(e){alert(e.message);});
-}
+function showReset(){var e=prompt('Enter your email to reset password:');if(!e)return;auth.sendPasswordResetEmail(e).then(function(){alert('Password reset email sent.');}).catch(function(err){alert(err.message);});}
 
 function onAuthChange(user){
   if(user){
     currentUser=user;
     document.getElementById('login-screen').style.display='none';
     document.getElementById('app').style.display='block';
-    loadUserProfile(user.uid);
+    loadProfile(user.uid);
   } else {
     currentUser=null;currentProfile=null;
     document.getElementById('app').style.display='none';
@@ -682,239 +754,245 @@ function onAuthChange(user){
   }
 }
 
-function loadUserProfile(uid){
+function loadProfile(uid){
   db.ref('users/'+uid).on('value',function(snap){
-    var profile=snap.val();
-    if(!profile){
-      // First-time user — create viewer profile
-      profile={name:currentUser.displayName||currentUser.email,email:currentUser.email,role:'viewer',visibility:'all',createdAt:new Date().toISOString()};
-      db.ref('users/'+uid).set(profile);
-    }
-    currentProfile=profile;
-    updateUIForRole(profile);
-    subscribeData(profile);
+    var p=snap.val();
+    if(!p){p={name:currentUser.displayName||currentUser.email,email:currentUser.email,role:'viewer',visibility:'all',createdAt:new Date().toISOString()};db.ref('users/'+uid).set(p);}
+    currentProfile=p;
+    document.getElementById('user-disp').textContent=p.name||p.email||'Staff';
+    var rb=document.getElementById('role-disp');rb.textContent=p.role||'viewer';rb.className='role-badge role-'+(p.role||'viewer');
+    document.getElementById('tab-users').classList.toggle('hidden',(p.role||'viewer')!=='admin');
+    document.getElementById('btn-clear-all').style.display=can('delete')?'':'none';
+    subscribeData();
     setSyncStatus('ok');
   });
 }
 
-function updateUIForRole(p){
-  var role=p.role||'viewer';
-  document.getElementById('user-name-display').textContent=p.name||p.email||'Staff';
-  var rb=document.getElementById('role-badge-display');
-  rb.textContent=role;rb.className='role-badge role-'+role;
-  // Show/hide tabs by role
-  document.getElementById('tab-users').classList.toggle('hidden',role!=='admin');
-  // Disable delete for non-admin/manager
-  document.getElementById('btn-clear-all').style.display=(role==='admin')?'':'none';
-}
-
-// ══════════════════════════════════════════════
-//  REALTIME DATA SUBSCRIPTION
-// ══════════════════════════════════════════════
-function subscribeData(profile){
+function subscribeData(){
   setSyncStatus('pending');
-  // Counters
-  db.ref('counters').on('value',function(snap){counters=snap.val()||counters;genRef();});
-  // Jobs
-  db.ref('jobs').on('value',function(snap){
-    jobs=snap.val()||{};
-    updateCounts();
-    var activePanel=document.querySelector('.panel.active');
-    if(activePanel){
-      var id=activePanel.id.replace('panel-','');
-      if(id==='log') renderLog();
-      if(id==='dash') renderDash();
-      if(id==='workload') renderWorkload();
-      if(id==='parts') renderParts();
-      if(id==='spares') renderSpares();
+  db.ref('counters').on('value',function(s){counters=s.val()||counters;genRef();});
+  db.ref('jobs').on('value',function(s){
+    jobs=s.val()||{};updateCounts();
+    var ap=document.querySelector('.panel.active');
+    if(ap){var id=ap.id.replace('panel-','');
+      if(id==='log')renderLog();else if(id==='dash')renderDash();else if(id==='workload')renderWorkload();
+      else if(id==='trackers')renderTrackers();else if(id==='customers')renderCustomers();
     }
+    updateCustList();setSyncStatus('ok');
   });
-  // Users (admin only)
-  if(profile.role==='admin'){
-    db.ref('users').on('value',function(snap){
-      if(document.getElementById('panel-users').classList.contains('active')) renderUsers(snap.val()||{});
-    });
-  }
-  setSyncStatus('ok');
+  db.ref('technicians').on('value',function(s){
+    technicians=s.val()||{};
+    updateTechDropdowns();
+    if(document.getElementById('panel-users').classList.contains('active'))renderTechList();
+  });
+  db.ref('users').on('value',function(s){
+    users=s.val()||{};
+    if(document.getElementById('panel-users').classList.contains('active'))renderUsers();
+  });
 }
 
 function setSyncStatus(s){
-  var dot=document.getElementById('sync-dot'),lbl=document.getElementById('sync-label');
-  if(s==='ok'){dot.className='sync-dot sync-ok';lbl.textContent='Live';}
-  else if(s==='off'){dot.className='sync-dot sync-off';lbl.textContent='Offline';}
-  else{dot.className='sync-dot sync-pending';lbl.textContent='Syncing…';}
+  var d=document.getElementById('sync-dot'),l=document.getElementById('sync-lbl');
+  if(s==='ok'){d.className='sync-dot sync-ok';l.textContent='Live';}
+  else if(s==='off'){d.className='sync-dot sync-off';l.textContent='Offline';}
+  else{d.className='sync-dot sync-pending';l.textContent='Syncing…';}
 }
 
-// ══════════════════════════════════════════════
-//  PERMISSIONS
-// ══════════════════════════════════════════════
-var PERMS={
-  admin:  {create:true,editAny:true,editOwn:true,delete:true,download:true,manageUsers:true},
-  manager:{create:true,editAny:true,editOwn:true,delete:false,download:true,manageUsers:false},
-  technician:{create:true,editAny:false,editOwn:true,delete:false,download:true,manageUsers:false},
-  viewer: {create:false,editAny:false,editOwn:false,delete:false,download:true,manageUsers:false}
-};
-function can(action){
-  var role=(currentProfile&&currentProfile.role)||'viewer';
-  return !!(PERMS[role]&&PERMS[role][action]);
-}
-function canEdit(job){
-  if(can('editAny')) return true;
-  if(can('editOwn')&&job&&job.createdBy===currentUser.uid) return true;
-  return false;
-}
-function showPermDenied(){
-  var b=document.getElementById('perm-banner');b.style.display='block';
-  setTimeout(function(){b.style.display='none';},3000);
-}
-function visibleJobs(){
-  var arr=Object.values(jobs);
-  if(!currentProfile) return arr;
-  if(currentProfile.visibility==='own'){
-    return arr.filter(function(j){return j.createdBy===currentUser.uid||j.tech===currentProfile.name;});
-  }
-  return arr;
-}
-
-// ══════════════════════════════════════════════
-//  TABS
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════
 function sw(id,el){
   document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
   document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
   document.getElementById('panel-'+id).classList.add('active');el.classList.add('active');
-  if(id==='log') renderLog();
-  if(id==='dash') renderDash();
-  if(id==='workload') renderWorkload();
-  if(id==='parts') renderParts();
-  if(id==='spares') renderSpares();
-  if(id==='users') renderUsers();
+  if(id==='log')renderLog();else if(id==='dash')renderDash();else if(id==='workload')renderWorkload();
+  else if(id==='trackers')renderTrackers();else if(id==='customers')renderCustomers();
+  else if(id==='users'){renderTechList();renderUsers();}
+}
+function swTracker(id,el){
+  document.querySelectorAll('.tracker-tab').forEach(function(b){b.classList.remove('active');});
+  document.querySelectorAll('.tracker-panel').forEach(function(p){p.classList.remove('active');});
+  document.getElementById('tracker-'+id).classList.add('active');el.classList.add('active');
+  renderTrackers();
 }
 
-// ══════════════════════════════════════════════
-//  FORM HELPERS
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════
 function v(id){var e=document.getElementById(id);return e?e.value.trim():'';}
 function sv(id,val){var e=document.getElementById(id);if(e&&(val||val===0))e.value=val;}
 function today(){return new Date().toISOString().split('T')[0];}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;');}
+function fmt(n){return'SCR '+(+n||0).toFixed(2);}
 function updateDiagNote(){var e=document.getElementById('diag-type');if(e)document.getElementById('diag-note').textContent=e.value==='professional'?'Professional / commercial rate':'Domestic rate';}
 
 function genRef(){
-  if(editingRef) return;
-  var cat=document.getElementById('jcat').value;
-  var code=document.getElementById('jcust-code').value;
+  if(editingRef)return;
+  var cat=document.getElementById('jcat').value,code=document.getElementById('jcust-code').value;
   var seq=String((counters[cat]||0)+1).padStart(4,'0');
-  var ref='DVS-KSC-'+YR+'-'+cat+'-'+seq;if(code) ref+='-'+code;
+  var ref='DVS-KSC-'+YR+'-'+cat+'-'+seq;if(code)ref+='-'+code;
   document.getElementById('ref-display').textContent=ref;
 }
 
-// ══════════════════════════════════════════════
-//  PARTS TABLE
-// ══════════════════════════════════════════════
+function updateTechDropdowns(){
+  var techArr=Object.values(technicians).filter(function(t){return t.active!==false;});
+  var selects=['job-tech','issued-f-tech','log-f-tech'];
+  selects.forEach(function(sid){
+    var sel=document.getElementById(sid);if(!sel)return;
+    var cur=sel.value;
+    sel.innerHTML='<option value="">— Select —</option>';
+    techArr.forEach(function(t){var o=document.createElement('option');o.value=t.name;o.textContent=t.name+(t.spec?' ('+t.spec+')':'');sel.appendChild(o);});
+    if(cur)sel.value=cur;
+  });
+}
+
+function updateCustList(){
+  var names={};Object.values(jobs).forEach(function(j){if(j.custName)names[j.custName]=true;});
+  var dl=document.getElementById('cust-list');if(!dl)return;
+  dl.innerHTML=Object.keys(names).map(function(n){return'<option value="'+esc(n)+'">';}).join('');
+}
+
+function onCustInput(){
+  var name=v('cust-name');
+  // Auto-fill customer details from last job
+  var matching=Object.values(jobs).filter(function(j){return(j.custName||'').toLowerCase()===name.toLowerCase();});
+  if(matching.length){
+    var last=matching[matching.length-1];
+    if(!v('cust-phone')&&last.custPhone)sv('cust-phone',last.custPhone);
+    if(!v('cust-email')&&last.custEmail)sv('cust-email',last.custEmail);
+    if(!v('cust-company')&&last.custCompany)sv('cust-company',last.custCompany);
+  }
+}
+
+// ══════════════════════════════════════════
+// PARTS TABLE
+// ══════════════════════════════════════════
 function getParts(){
   var p=[];
   document.querySelectorAll('#parts-body tr').forEach(function(tr){
-    var i=tr.querySelectorAll('input,select');
-    var desc=i[0].value.trim(),pn=i[1].value.trim(),itype=i[2].value,purpose=i[3].value,qty=parseFloat(i[4].value)||0,price=parseFloat(i[5].value)||0,statusOrTo=i[6].value.trim();
-    var dtCell=tr.querySelectorAll('td')[8];
-    var dt='';
-    if(dtCell){
-      var stored=dtCell.getAttribute('data-dt');
-      if(stored){dt=stored;}
-      else{
-        var di=dtCell.querySelector('input[type="date"]'),ti=dtCell.querySelector('input[type="time"]');
-        if(di&&ti&&di.value&&ti.value){
-          var dp=di.value.split('-'),h2=parseInt(ti.value.split(':')[0]),m2=ti.value.split(':')[1]||'00',ap2=h2>=12?'PM':'AM';
-          h2=h2%12||12;dt=dp[2]+'/'+dp[1]+'/'+dp[0]+' '+h2+':'+m2+' '+ap2;
-        }
+    var cells=tr.querySelectorAll('td');
+    if(cells.length<10)return;
+    var desc=cells[1].querySelector('input').value.trim();
+    var pn=cells[2].querySelector('input').value.trim();
+    var itype=cells[3].querySelector('select').value;
+    var purpose=cells[4].querySelector('select').value;
+    var qty=parseFloat(cells[5].querySelector('input').value)||0;
+    var price=parseFloat(cells[6].querySelector('input').value)||0;
+    var statusOrTo=cells[7].querySelector('input,select').value.trim();
+    // Date & time
+    var dtCell=cells[8];var dt='';
+    var stored=dtCell.getAttribute('data-dt');
+    if(stored){dt=stored;}
+    else{
+      var di=dtCell.querySelector('input[type=date]'),ti=dtCell.querySelector('input[type=time]');
+      if(di&&ti&&di.value&&ti.value){
+        var dp=di.value.split('-'),h=parseInt(ti.value.split(':')[0]),m=ti.value.split(':')[1]||'00',ap=h>=12?'PM':'AM';h=h%12||12;
+        dt=dp[2]+'/'+dp[1]+'/'+dp[0]+' '+h+':'+m+' '+ap;
       }
     }
-    if(desc||pn||qty) p.push({desc:desc,pn:pn,itype:itype,purpose:purpose,qty:qty,price:price,total:purpose==='Issued to Tech'?0:qty*price,status:purpose==='Required'?statusOrTo:'',issuedTo:purpose==='Issued to Tech'?statusOrTo:'',dt:dt});
+    var supplier=cells[9].querySelector('input').value.trim();
+    if(desc||pn||qty)p.push({desc:desc,pn:pn,itype:itype,purpose:purpose,qty:qty,price:price,total:qty*price,status:purpose==='Required'||purpose==='To Order'?statusOrTo:'',issuedTo:purpose==='Issued to Tech'?statusOrTo:'',dt:dt,supplier:supplier});
   });return p;
 }
 
-function addPart(desc,pn,itype,purpose,qty,price,statusOrTo,dt){
-  desc=desc||'';pn=pn||'';itype=itype||'Part';purpose=purpose||'Required';qty=qty||1;price=price||0;
+function addPart(desc,pn,itype,purpose,qty,price,statusOrTo,dt,supplier){
+  desc=desc||'';pn=pn||'';itype=itype||'Part';purpose=purpose||'Required';qty=qty||1;price=price||0;supplier=supplier||'';
   var isIssued=purpose==='Issued to Tech';
-  statusOrTo=statusOrTo||(isIssued?'':'Ordered');
-  dt=dt||'';
-  var editable=can('create')||can('editAny')||(editingRef&&can('editOwn'));
-  var tr=document.createElement('tr');
-  tr.style.background=isIssued?'#f0fff4':'';
-  var n=document.querySelectorAll('#parts-body tr').length+1;
-  var nowDate=today(),nowTime=String(new Date().getHours()).padStart(2,'0')+':'+String(new Date().getMinutes()).padStart(2,'0');
+  var isOrder=purpose==='To Order';
+  if(!statusOrTo)statusOrTo=isIssued?'':isOrder?'Ordered':'Ordered';
+  if(!dt&&isIssued){var n=new Date();var h=n.getHours(),mi=n.getMinutes(),ap=h>=12?'PM':'AM';h=h%12||12;dt=String(n.getDate()).padStart(2,'0')+'/'+String(n.getMonth()+1).padStart(2,'0')+'/'+n.getFullYear()+' '+h+':'+String(mi).padStart(2,'0')+' '+ap;}
   var dateVal='',timeVal='';
-  if(isIssued&&dt){var dp2=dt.split(' ');if(dp2.length>=2){var dps=dp2[0].split('/');if(dps.length===3){dateVal=dps[2]+'-'+dps[1]+'-'+dps[0];}var tp2=dp2[1];var ap2=(dp2[2]||'').toUpperCase();var hp2=tp2.split(':');var h2=parseInt(hp2[0]);if(ap2==='PM'&&h2!==12)h2+=12;if(ap2==='AM'&&h2===12)h2=0;timeVal=String(h2).padStart(2,'0')+':'+(hp2[1]||'00');}}
-  if(isIssued&&!dateVal){dateVal=nowDate;timeVal=nowTime;}
-  var disAttr=editable?'':'disabled';
-  tr.innerHTML='<td style="color:#999;font-size:10px">'+n+'</td>'
-    +'<td><input type="text" value="'+esc(desc)+'" placeholder="'+(isIssued?'Item / Part':'Description')+'" oninput="calcTotal()" '+disAttr+'></td>'
-    +'<td><input type="text" value="'+esc(pn)+'" placeholder="Part no." style="font-family:monospace" '+disAttr+'></td>'
-    +'<td><select onchange="calcTotal()" '+disAttr+'><option'+(itype==='Part'?' selected':'')+'>Part</option><option'+(itype==='Accessory'?' selected':'')+'>Accessory</option></select></td>'
-    +'<td><select onchange="updateRowPurpose(this);calcTotal()" style="font-size:10px;'+(isIssued?'background:#e8f8ee;font-weight:700;color:#1a7a3a':'background:#e8f0ff;font-weight:700;color:#0044aa')+'" '+disAttr+'>'
+  if(isIssued&&dt){
+    var dpts=dt.split(' ');if(dpts.length>=2){var dps2=dpts[0].split('/');if(dps2.length===3){dateVal=dps2[2]+'-'+dps2[1]+'-'+dps2[0];}var tp=dpts[1],ap2=(dpts[2]||'').toUpperCase(),hm=tp.split(':'),h2=parseInt(hm[0]),m2=hm[1]||'00';if(ap2==='PM'&&h2!==12)h2+=12;if(ap2==='AM'&&h2===12)h2=0;timeVal=String(h2).padStart(2,'0')+':'+m2;}
+  }
+  if(!dateVal&&isIssued){dateVal=today();timeVal=String(new Date().getHours()).padStart(2,'0')+':'+String(new Date().getMinutes()).padStart(2,'0');}
+  var bg=isIssued?'#f0fff4':isOrder?'#fff8e8':'';
+  var tr=document.createElement('tr');tr.style.background=bg;
+  var n=document.querySelectorAll('#parts-body tr').length+1;
+  var purposeStyle=isIssued?'background:#e8f8ee;font-weight:700;color:#1a7a3a':isOrder?'background:#fff3e0;font-weight:700;color:#8a5000':'background:#e8f0ff;font-weight:700;color:#0044aa';
+  tr.innerHTML='<td style="color:#999;font-size:10px;text-align:center">'+n+'</td>'
+    +'<td><input type="text" value="'+esc(desc)+'" placeholder="Description" oninput="calcTotal()"></td>'
+    +'<td><input type="text" value="'+esc(pn)+'" placeholder="Part no." style="font-family:monospace"></td>'
+    +'<td><select onchange="calcTotal()"><option'+(itype==='Part'?' selected':'')+'>Part</option><option'+(itype==='Accessory'?' selected':'')+'>Accessory</option></select></td>'
+    +'<td><select onchange="updateRowPurpose(this);calcTotal()" style="font-size:10px;'+purposeStyle+'">'
     +'<option value="Required"'+(purpose==='Required'?' selected':'')+'>Required</option>'
     +'<option value="Issued to Tech"'+(purpose==='Issued to Tech'?' selected':'')+'>Issued to Tech</option>'
+    +'<option value="To Order"'+(purpose==='To Order'?' selected':'')+'>To Order</option>'
     +'</select></td>'
-    +'<td><input type="number" value="'+qty+'" min="1" style="width:44px" oninput="calcTotal()" '+disAttr+'></td>'
-    +'<td><input type="number" value="'+(isIssued?0:price)+'" min="0" step="0.01" style="width:70px" oninput="calcTotal()"'+(isIssued?' disabled style="width:70px;background:#f0f0f0;color:#aaa"':' '+disAttr)+'></td>'
+    +'<td><input type="number" value="'+qty+'" min="1" style="width:42px;text-align:center" oninput="calcTotal()"></td>'
+    +'<td><input type="number" value="'+price+'" min="0" step="0.01" style="width:80px" oninput="calcTotal()"></td>'
     +'<td>'+(isIssued
-      ?'<input type="text" value="'+esc(statusOrTo)+'" placeholder="Technician" '+disAttr+'>'
-      :'<select '+disAttr+'><option'+(statusOrTo==='Ordered'?' selected':'')+'>Ordered</option><option'+(statusOrTo==='In stock'?' selected':'')+'>In stock</option><option'+(statusOrTo==='Awaiting import'?' selected':'')+'>Awaiting import</option><option'+(statusOrTo==='Received'?' selected':'')+'>Received</option></select>')
+      ?'<input type="text" value="'+esc(statusOrTo)+'" placeholder="Technician">'
+      :'<select><option'+(statusOrTo==='Ordered'?' selected':'')+'>Ordered</option><option'+(statusOrTo==='In stock'?' selected':'')+'>In stock</option><option'+(statusOrTo==='Awaiting import'?' selected':'')+'>Awaiting import</option><option'+(statusOrTo==='Received'?' selected':'')+'>Received</option></select>')
     +'</td>'
     +'<td>'+(isIssued
-      ?'<div style="display:flex;gap:3px"><input type="date" value="'+dateVal+'" style="font-size:10px;flex:1;padding:3px 4px;border:1px solid #ccc;border-radius:4px;font-family:Arial" onchange="rebuildDT(this)" '+disAttr+'><input type="time" value="'+timeVal+'" style="font-size:10px;width:68px;padding:3px 4px;border:1px solid #ccc;border-radius:4px;font-family:Arial" onchange="rebuildDT(this)" '+disAttr+'></div>'
-      :'<input type="text" value="" placeholder="—" style="font-size:10px;background:#f5f5f5;color:#aaa;width:100%;padding:3px 4px;border:1px solid #eee;border-radius:4px" readonly>')
+      ?'<div class="dt-cell"><input type="date" value="'+dateVal+'" onchange="rebuildDT(this)"><input type="time" value="'+timeVal+'" onchange="rebuildDT(this)"></div>'
+      :'<input type="text" placeholder="—" style="font-size:10px;background:#f5f5f5;color:#aaa;width:100%;padding:3px 4px;border:1px solid #eee;border-radius:4px" readonly>')
     +'</td>'
-    +'<td>'+(editable?'<button onclick="this.closest(\'tr\').remove();calcTotal()" style="border:none;background:none;cursor:pointer;color:#dc3545;font-size:15px" title="Remove">&#10005;</button>':'')+'</td>';
+    +'<td><input type="text" value="'+esc(supplier)+'" placeholder="Supplier"></td>'
+    +'<td style="text-align:center"><button onclick="this.closest(\'tr\').remove();calcTotal()" style="border:none;background:none;cursor:pointer;color:#dc3545;font-size:15px;padding:0 4px" title="Remove">&#10005;</button></td>';
   document.getElementById('parts-body').appendChild(tr);
 }
 
 function rebuildDT(inp){
-  var td=inp.closest('td');var di=td.querySelector('input[type="date"]');var ti=td.querySelector('input[type="time"]');
-  if(!di||!ti||!di.value||!ti.value) return;
+  var td=inp.closest('td');var di=td.querySelector('input[type=date]');var ti=td.querySelector('input[type=time]');
+  if(!di||!ti||!di.value||!ti.value)return;
   var dp=di.value.split('-'),h=parseInt(ti.value.split(':')[0]),m=ti.value.split(':')[1]||'00',ap=h>=12?'PM':'AM';h=h%12||12;
   td.setAttribute('data-dt',dp[2]+'/'+dp[1]+'/'+dp[0]+' '+h+':'+m+' '+ap);
 }
 
 function updateRowPurpose(sel){
-  var tr=sel.closest('tr'),isIssued=sel.value==='Issued to Tech';
-  tr.style.background=isIssued?'#f0fff4':'';
-  sel.style.cssText=isIssued?'font-size:10px;background:#e8f8ee;font-weight:700;color:#1a7a3a':'font-size:10px;background:#e8f0ff;font-weight:700;color:#0044aa';
+  var tr=sel.closest('tr'),purpose=sel.value;
+  var isIssued=purpose==='Issued to Tech',isOrder=purpose==='To Order';
+  tr.style.background=isIssued?'#f0fff4':isOrder?'#fff8e8':'';
+  sel.style.cssText=isIssued?'font-size:10px;background:#e8f8ee;font-weight:700;color:#1a7a3a':isOrder?'font-size:10px;background:#fff3e0;font-weight:700;color:#8a5000':'font-size:10px;background:#e8f0ff;font-weight:700;color:#0044aa';
   var cells=tr.querySelectorAll('td');
-  // Price cell (index 6)
-  var priceInp=cells[6].querySelector('input');if(priceInp){priceInp.disabled=isIssued;priceInp.style.background=isIssued?'#f0f0f0':'';priceInp.style.color=isIssued?'#aaa':'';}
-  // Status/issuedTo cell (index 7)
+  // Price — ALWAYS keep existing value, never clear
+  // Status/IssuedTo cell (index 7)
   var statusCell=cells[7];
-  if(isIssued&&statusCell.querySelector('select')){var ni=document.createElement('input');ni.type='text';ni.placeholder='Technician';ni.style.cssText='font-size:11px;width:100%;font-family:Arial;border:1px solid #ccc;border-radius:4px;padding:3px 5px';statusCell.innerHTML='';statusCell.appendChild(ni);}
-  else if(!isIssued&&statusCell.querySelector('input')){var ns=document.createElement('select');ns.innerHTML='<option>Ordered</option><option>In stock</option><option>Awaiting import</option><option>Received</option>';ns.style.cssText='font-size:11px;width:100%;font-family:Arial;border:1px solid #ccc;border-radius:4px;padding:3px 5px;background:#fff';statusCell.innerHTML='';statusCell.appendChild(ns);}
+  var curVal=statusCell.querySelector('input,select')?statusCell.querySelector('input,select').value:'';
+  if(isIssued&&statusCell.querySelector('select')){var ni=document.createElement('input');ni.type='text';ni.placeholder='Technician';ni.value=curVal;ni.style.cssText='font-size:11px;width:100%;font-family:Arial;border:1px solid #ccc;border-radius:4px;padding:3px 5px';statusCell.innerHTML='';statusCell.appendChild(ni);}
+  else if(!isIssued&&statusCell.querySelector('input[type=text]')){var ns=document.createElement('select');ns.innerHTML='<option>Ordered</option><option>In stock</option><option>Awaiting import</option><option>Received</option>';ns.style.cssText='font-size:11px;width:100%;font-family:Arial;border:1px solid #ccc;border-radius:4px;padding:3px 5px;background:#fff';if(curVal)ns.value=curVal;statusCell.innerHTML='';statusCell.appendChild(ns);}
   // DT cell (index 8)
   var dtCell=cells[8];
-  if(isIssued){var nd=today(),nt=String(new Date().getHours()).padStart(2,'0')+':'+String(new Date().getMinutes()).padStart(2,'0');dtCell.innerHTML='<div style="display:flex;gap:3px"><input type="date" value="'+nd+'" style="font-size:10px;flex:1;padding:3px 4px;border:1px solid #ccc;border-radius:4px;font-family:Arial" onchange="rebuildDT(this)"><input type="time" value="'+nt+'" style="font-size:10px;width:68px;padding:3px 4px;border:1px solid #ccc;border-radius:4px;font-family:Arial" onchange="rebuildDT(this)"></div>';}
-  else{dtCell.innerHTML='<input type="text" placeholder="—" style="font-size:10px;background:#f5f5f5;color:#aaa;width:100%;padding:3px 4px;border:1px solid #eee;border-radius:4px" readonly>';dtCell.removeAttribute('data-dt');}
+  if(isIssued&&!dtCell.querySelector('input[type=date]')){
+    var nd=today(),nt=String(new Date().getHours()).padStart(2,'0')+':'+String(new Date().getMinutes()).padStart(2,'0');
+    dtCell.innerHTML='<div class="dt-cell"><input type="date" value="'+nd+'" onchange="rebuildDT(this)"><input type="time" value="'+nt+'" onchange="rebuildDT(this)"></div>';
+  }else if(!isIssued&&dtCell.querySelector('input[type=date]')){
+    dtCell.innerHTML='<input type="text" placeholder="—" style="font-size:10px;background:#f5f5f5;color:#aaa;width:100%;padding:3px 4px;border:1px solid #eee;border-radius:4px" readonly>';
+    dtCell.removeAttribute('data-dt');
+  }
   calcTotal();
 }
 
 function calcTotal(){
-  var parts=getParts().filter(function(p){return p.purpose==='Required';});
-  var ps=0,as=0;parts.forEach(function(p){if(p.itype==='Accessory')as+=p.total;else ps+=p.total;});
+  var parts=getParts();
+  var ps=0,is=0,as=0;
+  parts.forEach(function(p){
+    if(p.purpose==='Issued to Tech') is+=p.total;
+    else if(p.itype==='Accessory') as+=p.total;
+    else ps+=p.total;
+  });
   var diag=parseFloat(document.getElementById('diag-cost').value)||0;
   var svc=parseFloat(document.getElementById('service-cost').value)||0;
   var lab=parseFloat(document.getElementById('labour-cost').value)||0;
   document.getElementById('parts-subtotal').textContent=ps.toFixed(2);
+  document.getElementById('issued-subtotal').textContent=is.toFixed(2);
   document.getElementById('acc-subtotal').textContent=as.toFixed(2);
-  document.getElementById('grand-total').textContent='SCR '+(diag+svc+lab+ps+as).toFixed(2);
+  document.getElementById('grand-total').textContent='SCR '+(diag+svc+lab+ps+is+as).toFixed(2);
 }
-function getSI(){return getParts().filter(function(p){return p.purpose==='Issued to Tech';});}
 
-// ══════════════════════════════════════════════
-//  FORM DATA
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════
+// FORM DATA
+// ══════════════════════════════════════════
 function getFormData(){
   var cat=document.getElementById('jcat').value,code=document.getElementById('jcust-code').value,parts=getParts();
-  var diag=parseFloat(document.getElementById('diag-cost').value)||0,svc=parseFloat(document.getElementById('service-cost').value)||0,lab=parseFloat(document.getElementById('labour-cost').value)||0;
-  var ps=parts.filter(function(p){return p.purpose==='Required'&&p.itype!=='Accessory';}).reduce(function(s,p){return s+p.total;},0);
-  var as=parts.filter(function(p){return p.purpose==='Required'&&p.itype==='Accessory';}).reduce(function(s,p){return s+p.total;},0);
+  var diag=parseFloat(document.getElementById('diag-cost').value)||0;
+  var svc=parseFloat(document.getElementById('service-cost').value)||0;
+  var lab=parseFloat(document.getElementById('labour-cost').value)||0;
+  var ps=parts.filter(function(p){return p.purpose!=='Issued to Tech'&&p.itype!=='Accessory';}).reduce(function(s,p){return s+p.total;},0);
+  var is=parts.filter(function(p){return p.purpose==='Issued to Tech';}).reduce(function(s,p){return s+p.total;},0);
+  var as=parts.filter(function(p){return p.itype==='Accessory'&&p.purpose!=='Issued to Tech';}).reduce(function(s,p){return s+p.total;},0);
   var ref;
   if(editingRef){ref=editingRef;}
   else{counters[cat]=(counters[cat]||0)+1;ref='DVS-KSC-'+YR+'-'+cat+'-'+String(counters[cat]).padStart(4,'0');if(code)ref+='-'+code;}
@@ -923,44 +1001,37 @@ function getFormData(){
     custName:v('cust-name'),custAcct:document.getElementById('cust-acct').value,custPhone:v('cust-phone'),custEmail:v('cust-email'),custCompany:v('cust-company'),custContact:v('cust-contact'),
     eqModel:v('eq-model'),eqSerial:v('eq-serial'),eqSN:v('eq-sn'),eqType:v('eq-type'),eqYear:v('eq-year'),eqColour:v('eq-colour'),eqCondition:document.getElementById('eq-condition').value,eqAcc:v('eq-acc'),fault:v('eq-fault'),
     priority:document.getElementById('job-priority').value,status:document.getElementById('job-status').value,tech:v('job-tech'),diagDate:v('job-diag-date'),compDate:v('job-comp-date'),findings:v('job-findings'),
-    parts:parts,diagCost:diag,diagType:document.getElementById('diag-type').value,svcType:document.getElementById('svc-type').value,serviceCost:svc,labour:lab,partsSub:ps,accSub:as,grandTotal:diag+svc+lab+ps+as,
+    parts:parts,diagCost:diag,diagType:document.getElementById('diag-type').value,svcType:document.getElementById('svc-type').value,serviceCost:svc,labour:lab,partsSub:ps,issuedSub:is,accSub:as,grandTotal:diag+svc+lab+ps+is+as,
     quoteNum:v('quote-num'),quoteSent:v('quote-sent'),quoteApprover:v('quote-approver'),quoteDate:v('quote-date'),invNum:v('inv-num'),invDate:v('inv-date'),
     qcBy:v('qc-by'),dateReady:v('date-ready'),dateCollected:v('date-collected'),collectedBy:v('collected-by'),
     chkTested:document.getElementById('chk-tested').checked,chkExplained:document.getElementById('chk-explained').checked,chkInvoice:document.getElementById('chk-invoice').checked,
     updatedAt:new Date().toISOString()};
 }
 
-function validate(d){if(!d.custName)return'Customer name is required.';if(!d.eqModel)return'Machine model is required.';if(!d.fault)return'Fault description is required.';return null;}
+function validate(d){if(!d.custName)return'Customer name required.';if(!d.eqModel)return'Machine model required.';if(!d.fault)return'Fault description required.';return null;}
 function showSt(msg,type){type=type||'ok';var el=document.getElementById('form-st');el.className='st show '+type;el.innerHTML=(type==='ok'?'&#10003; ':'&#9888; ')+msg;setTimeout(function(){el.classList.remove('show');},5000);}
 
 function saveJob(dl){
-  if(!can('create')&&!editingRef){showPermDenied();return;}
-  if(editingRef){var existing=Object.values(jobs).find(function(j){return j.ref===editingRef;});if(!canEdit(existing)){showPermDenied();return;}}
+  if(!can('create')&&!editingRef){showPerm();return;}
   var d=getFormData(),err=validate(d);
   if(err){if(!editingRef)counters[d.cat]--;showSt(err,'err');return;}
   setSyncStatus('pending');
-  // Update counters in Firebase
-  var updates={};
-  if(!editingRef) updates['counters/'+d.cat]=counters[d.cat];
-  updates['jobs/'+d.ref]=d;
-  db.ref().update(updates).then(function(){
-    if(dl) downloadJobCard(d);
-    clearForm();
-    showSt('Job '+d.ref+' saved'+(dl?' and downloaded.':'.'));
-    setSyncStatus('ok');
-  }).catch(function(e){showSt('Save failed: '+e.message,'err');counters[d.cat]--;setSyncStatus('off');});
+  var upd={};
+  if(!editingRef)upd['counters/'+d.cat]=counters[d.cat];
+  upd['jobs/'+d.ref]=d;
+  db.ref().update(upd).then(function(){
+    if(dl)downloadJobCard(d);clearForm();showSt('Job '+d.ref+' saved'+(dl?' and downloaded.':'.'));setSyncStatus('ok');
+  }).catch(function(e){showSt('Save failed: '+e.message,'err');if(!editingRef)counters[d.cat]--;setSyncStatus('off');});
 }
 
 function saveAndDelivery(){
-  if(!can('create')&&!editingRef){showPermDenied();return;}
+  if(!can('create')&&!editingRef){showPerm();return;}
   var d=getFormData(),err=validate(d);
   if(err){if(!editingRef)counters[d.cat]--;showSt(err,'err');return;}
   setSyncStatus('pending');
-  var updates={};if(!editingRef)updates['counters/'+d.cat]=counters[d.cat];
-  updates['jobs/'+d.ref]=d;
-  db.ref().update(updates).then(function(){
-    downloadDeliveryNote(d);clearForm();showSt('Job '+d.ref+' saved. Delivery note downloading.');setSyncStatus('ok');
-  }).catch(function(e){showSt('Save failed: '+e.message,'err');counters[d.cat]--;setSyncStatus('off');});
+  var upd={};if(!editingRef)upd['counters/'+d.cat]=counters[d.cat];
+  upd['jobs/'+d.ref]=d;
+  db.ref().update(upd).then(function(){downloadDeliveryNote(d);clearForm();showSt('Saved. Delivery note downloading.');setSyncStatus('ok');}).catch(function(e){showSt('Save failed: '+e.message,'err');if(!editingRef)counters[d.cat]--;setSyncStatus('off');});
 }
 
 function clearForm(){
@@ -970,13 +1041,14 @@ function clearForm(){
   document.getElementById('job-date').value=today();
   document.getElementById('diag-cost').value=0;document.getElementById('service-cost').value=0;document.getElementById('labour-cost').value=0;
   ['chk-tested','chk-explained','chk-invoice'].forEach(function(id){document.getElementById(id).checked=false;});
-  document.getElementById('parts-body').innerHTML='';calcTotal();genRef();
+  document.getElementById('parts-body').innerHTML='';
+  calcTotal();genRef();
   addPart('','','Part','Required');addPart('','','Part','Issued to Tech');
 }
 
 function editJob(ref){
   var d=Object.values(jobs).find(function(j){return j.ref===ref;});if(!d)return;
-  if(!canEdit(d)){showPermDenied();return;}
+  if(!canEdit(d)){showPerm();return;}
   editingRef=ref;
   document.getElementById('edit-ref-lbl').textContent=ref;document.getElementById('edit-banner').classList.add('show');
   document.getElementById('btn-save-dl').innerHTML='&#8659; Update &amp; Download';document.getElementById('btn-save-log').innerHTML='&#128190; Update Record';
@@ -989,17 +1061,16 @@ function editJob(ref){
   document.getElementById('diag-note').textContent=(d.diagType==='professional')?'Professional / commercial rate':'Domestic rate';
   document.getElementById('chk-tested').checked=!!d.chkTested;document.getElementById('chk-explained').checked=!!d.chkExplained;document.getElementById('chk-invoice').checked=!!d.chkInvoice;
   document.getElementById('parts-body').innerHTML='';
-  (d.parts||[]).forEach(function(p){addPart(p.desc,p.pn,p.itype,p.purpose||'Required',p.qty,p.price,p.status||p.issuedTo,p.dt);});
+  (d.parts||[]).forEach(function(p){addPart(p.desc,p.pn,p.itype,p.purpose||'Required',p.qty,p.price,p.status||p.issuedTo,p.dt,p.supplier);});
   calcTotal();sw('form',document.getElementById('tab-form'));window.scrollTo(0,0);
 }
 function cancelEdit(){
   editingRef=null;document.getElementById('edit-banner').classList.remove('show');
   document.getElementById('btn-save-dl').innerHTML='&#8659; Save &amp; Download Job Card';document.getElementById('btn-save-log').innerHTML='&#128190; Save to Log';genRef();
 }
-
 function deleteJob(ref){
-  if(!can('delete')){showPermDenied();return;}
-  if(!confirm('Delete job '+ref+'? This cannot be undone.')) return;
+  if(!can('delete')){showPerm();return;}
+  if(!confirm('Delete job '+ref+'? Cannot be undone.'))return;
   setSyncStatus('pending');
   db.ref('jobs/'+ref).remove().then(function(){setSyncStatus('ok');renderLog();}).catch(function(e){showSt('Delete failed: '+e.message,'err');setSyncStatus('off');});
 }
@@ -1007,31 +1078,32 @@ function deleteJob(ref){
 function updateCounts(){
   var arr=visibleJobs();
   document.getElementById('cnt-log').textContent=arr.length;
-  var pp=arr.reduce(function(a,j){return a.concat((j.parts||[]).filter(function(p){return(p.status==='Awaiting import'||p.status==='Ordered')&&p.purpose==='Required';}));}, []);
+  var pp=arr.reduce(function(a,j){return a.concat((j.parts||[]).filter(function(p){return(p.status==='Awaiting import'||p.status==='Ordered')&&p.purpose!=='Issued to Tech';}));}, []);
   document.getElementById('cnt-parts').textContent=pp.length;
 }
 
-// ══════════════════════════════════════════════
-//  JOB LOG
-// ══════════════════════════════════════════════
-function clearLogFilters(){['log-search','log-f-status','log-f-priority','log-f-from','log-f-to'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});renderLog();}
+// ══════════════════════════════════════════
+// JOB LOG
+// ══════════════════════════════════════════
+function clearLogFilters(){['log-search','log-f-status','log-f-priority','log-f-from','log-f-to'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});document.getElementById('log-f-tech').value='';renderLog();}
 function renderLog(){
   var el=document.getElementById('log-list');
-  var q=(v('log-search')||'').toLowerCase(),fs=v('log-f-status'),fp=v('log-f-priority'),ff=v('log-f-from'),ft=v('log-f-to');
+  var q=(v('log-search')||'').toLowerCase(),fs=v('log-f-status'),fp=v('log-f-priority'),ft=v('log-f-tech'),ff=v('log-f-from'),fto=v('log-f-to');
   var arr=visibleJobs().filter(function(j){
     if(q){var h=(j.ref+' '+(j.custName||'')+' '+(j.eqModel||'')+' '+(j.eqSerial||'')+' '+(j.eqSN||'')+' '+(j.eqType||'')+' '+(j.custPhone||'')).toLowerCase();if(h.indexOf(q)===-1)return false;}
     if(fs&&j.status!==fs)return false;if(fp&&j.priority!==fp)return false;
-    if(ff&&j.date<ff)return false;if(ft&&j.date>ft)return false;return true;
+    if(ft&&(j.tech||'')!==ft)return false;
+    if(ff&&j.date<ff)return false;if(fto&&j.date>fto)return false;return true;
   });
   document.getElementById('log-count').textContent=arr.length+' of '+visibleJobs().length+' job'+(visibleJobs().length!==1?'s':'');
-  if(!arr.length){el.innerHTML='<div class="empty">No jobs match your search.</div>';return;}
+  if(!arr.length){el.innerHTML='<div class="empty">No jobs match your filters.</div>';return;}
   arr.sort(function(a,b){return(b.date||'').localeCompare(a.date||'');});
   var bmap={'Received':'b-open','In Diagnosis':'b-prog','In Repair':'b-prog','Awaiting Parts':'b-parts','QC Check':'b-qc','Ready for Collection':'b-qc','Completed':'b-done'};
   el.innerHTML=arr.map(function(j){
     var canDel=can('delete'),canEd=canEdit(j),canDl=can('download');
-    return'<div class="log-row"><div class="log-ref">'+j.ref+'</div>'
-      +'<div class="log-info"><div class="log-name">'+esc(j.custName||'')+' — '+esc(j.eqModel||'')+(j.eqSerial?' <span style="font-family:monospace;font-size:10px;color:#aaa">PN:'+esc(j.eqSerial)+'</span>':'')+(j.eqSN?' <span style="font-family:monospace;font-size:10px;color:#aaa">SN:'+esc(j.eqSN)+'</span>':'')+'</div>'
-      +'<div class="log-meta">'+esc(j.date||'')+' &nbsp;·&nbsp; '+esc(j.eqType||'')+' &nbsp;·&nbsp; '+(j.tech?esc(j.tech):'Unassigned')+' &nbsp;·&nbsp; SCR '+(j.grandTotal||0).toFixed(2)+'</div></div>'
+    return'<div class="log-row"><div class="log-ref">'+esc(j.ref)+'</div>'
+      +'<div class="log-info"><div class="log-name">'+esc(j.custName||'')+' — '+esc(j.eqModel||'')+(j.eqSerial?' <span style="font-family:monospace;font-size:10px;color:#aaa">PN:'+esc(j.eqSerial)+'</span>':'')+'</div>'
+      +'<div class="log-meta">'+esc(j.date||'')+' &nbsp;·&nbsp; '+esc(j.eqType||'')+' &nbsp;·&nbsp; '+(j.tech?esc(j.tech):'Unassigned')+' &nbsp;·&nbsp; <strong>'+fmt(j.grandTotal)+'</strong></div></div>'
       +'<span class="badge '+(bmap[j.status]||'b-open')+'" style="margin-right:4px">'+esc(j.status||'')+'</span>'
       +'<div style="display:flex;gap:4px">'
       +(canEd?'<button class="btn warning small" onclick="editJob(\''+j.ref+'\')" title="Edit">&#9998;</button>':'')
@@ -1043,39 +1115,189 @@ function renderLog(){
 }
 function dlJob(ref){var d=Object.values(jobs).find(function(j){return j.ref===ref;});if(d)downloadJobCard(d);}
 function dlDelivery(ref){var d=Object.values(jobs).find(function(j){return j.ref===ref;});if(d)downloadDeliveryNote(d);}
-function clearAll(){if(!can('delete')){showPermDenied();return;}if(!confirm('Delete ALL job records? Cannot be undone.'))return;setSyncStatus('pending');db.ref('jobs').remove().then(function(){db.ref('counters').set({SV:0,WR:0,PM:0,IN:0,SP:0,AS:0,CL:0,TR:0});setSyncStatus('ok');}).catch(function(e){showSt('Failed: '+e.message,'err');setSyncStatus('off');});}
+function clearAll(){if(!can('delete')){showPerm();return;}if(!confirm('Delete ALL records?'))return;setSyncStatus('pending');db.ref('jobs').remove().then(function(){db.ref('counters').set({SV:0,WR:0,PM:0,IN:0,SP:0,AS:0,CL:0,TR:0});setSyncStatus('ok');}).catch(function(e){showSt('Failed: '+e.message,'err');setSyncStatus('off');});}
 
-// ══════════════════════════════════════════════
-//  DASHBOARD
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════
+// CUSTOMERS
+// ══════════════════════════════════════════
+function renderCustomers(){
+  var el=document.getElementById('cust-list-display');
+  var q=(v('cust-search')||'').toLowerCase();
+  var custMap={};
+  visibleJobs().forEach(function(j){
+    if(!j.custName)return;
+    if(!custMap[j.custName])custMap[j.custName]={name:j.custName,phone:j.custPhone,email:j.custEmail,company:j.custCompany,acct:j.custAcct,jobs:[]};
+    custMap[j.custName].jobs.push(j);
+  });
+  var arr=Object.values(custMap).filter(function(c){return!q||(c.name||'').toLowerCase().indexOf(q)>-1||(c.company||'').toLowerCase().indexOf(q)>-1||(c.phone||'').toLowerCase().indexOf(q)>-1;});
+  arr.sort(function(a,b){return a.name.localeCompare(b.name);});
+  if(!arr.length){el.innerHTML='<div class="empty">No customers found.</div>';return;}
+  el.innerHTML=arr.map(function(c){
+    var total=c.jobs.reduce(function(s,j){return s+(j.grandTotal||0);},0);
+    var completed=c.jobs.filter(function(j){return j.status==='Completed';}).length;
+    return'<div class="log-row" style="cursor:pointer" onclick="openCustModal(\''+esc(c.name)+'\')">'
+      +'<div class="log-info"><div class="log-name">'+esc(c.name)+(c.company?' <span style="font-size:11px;color:#888;font-weight:400">— '+esc(c.company)+'</span>':'')+'</div>'
+      +'<div class="log-meta">'+(c.phone||'—')+' &nbsp;·&nbsp; '+(c.acct||'Retail')+' &nbsp;·&nbsp; '+c.jobs.length+' job'+(c.jobs.length!==1?'s':'')+' &nbsp;·&nbsp; '+completed+' completed &nbsp;·&nbsp; Total: <strong>'+fmt(total)+'</strong></div></div>'
+      +'<span style="font-size:11px;color:#0070cc">View history &#8594;</span>'
+      +'</div>';
+  }).join('');
+}
+
+function openCustModal(name){
+  var custJobs=visibleJobs().filter(function(j){return j.custName===name;});
+  custJobs.sort(function(a,b){return(b.date||'').localeCompare(a.date||'');});
+  var c=custJobs[0]||{};
+  var total=custJobs.reduce(function(s,j){return s+(j.grandTotal||0);},0);
+  var completed=custJobs.filter(function(j){return j.status==='Completed';}).length;
+  document.getElementById('modal-cust-name').textContent=name;
+  document.getElementById('modal-cust-meta').textContent=(c.custPhone||'')+(c.custEmail?' | '+c.custEmail:'')+(c.custCompany?' | '+c.custCompany:'');
+  var bmap={'Received':'b-open','In Diagnosis':'b-prog','In Repair':'b-prog','Awaiting Parts':'b-parts','QC Check':'b-qc','Ready for Collection':'b-qc','Completed':'b-done'};
+  var html='<div style="display:flex;gap:12px;margin-bottom:1rem;flex-wrap:wrap">'
+    +'<div class="dash-card" style="flex:1;min-width:100px"><div class="dash-num">'+custJobs.length+'</div><div class="dash-lbl">Total jobs</div></div>'
+    +'<div class="dash-card" style="flex:1;min-width:100px"><div class="dash-num green">'+completed+'</div><div class="dash-lbl">Completed</div></div>'
+    +'<div class="dash-card" style="flex:1;min-width:100px"><div class="dash-num blue">'+fmt(total)+'</div><div class="dash-lbl">Total value</div></div>'
+    +'<div class="dash-card" style="flex:1;min-width:100px"><div class="dash-num orange">'+fmt(custJobs.length?total/custJobs.length:0)+'</div><div class="dash-lbl">Avg job value</div></div>'
+    +'</div>';
+  html+=custJobs.map(function(j){
+    return'<div class="log-row"><div class="log-ref">'+esc(j.ref)+'</div>'
+      +'<div class="log-info"><div class="log-name">'+esc(j.eqModel||'')+(j.eqSerial?' <span style="font-family:monospace;font-size:10px;color:#aaa">PN:'+esc(j.eqSerial)+'</span>':'')+'</div>'
+      +'<div class="log-meta">'+esc(j.date||'')+' &nbsp;·&nbsp; '+esc(j.eqType||'')+' &nbsp;·&nbsp; '+(j.tech?esc(j.tech):'Unassigned')+' &nbsp;·&nbsp; <strong>'+fmt(j.grandTotal)+'</strong></div></div>'
+      +'<span class="badge '+(bmap[j.status]||'b-open')+'">'+esc(j.status||'')+'</span>'
+      +'<div style="display:flex;gap:4px;margin-left:6px">'
+      +(can('download')?'<button class="btn small" onclick="dlJob(\''+j.ref+'\')" title="Download">&#8659;</button>':'')
+      +(can('download')?'<button class="btn info small" onclick="dlDelivery(\''+j.ref+'\')" title="Delivery note">&#128196;</button>':'')
+      +'</div></div>';
+  }).join('');
+  document.getElementById('modal-cust-body').innerHTML=html;
+  document.getElementById('cust-modal').classList.add('show');
+}
+function closeModal(){document.getElementById('cust-modal').classList.remove('show');}
+
+// ══════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════
+function toggleDashView(){
+  dashDetailed=!dashDetailed;
+  document.getElementById('dash-basic').style.display=dashDetailed?'none':'block';
+  document.getElementById('dash-detailed').style.display=dashDetailed?'block':'none';
+  document.getElementById('dash-view-btn').textContent=dashDetailed?'&#128200; Switch to Overview':'&#128200; Switch to Detailed';
+  renderDash();
+}
+
 function renderDash(){
   var arr=visibleJobs(),todayStr=today();
-  var wAgo=new Date();wAgo.setDate(wAgo.getDate()-7);var mAgo=new Date();mAgo.setDate(mAgo.getDate()-30);
+  if(!dashDetailed)renderBasicDash(arr,todayStr);
+  else renderDetailedDash(arr,todayStr);
+}
+
+function renderBasicDash(arr,todayStr){
+  var wAgo=new Date();wAgo.setDate(wAgo.getDate()-7);
+  var mAgo=new Date();mAgo.setDate(mAgo.getDate()-30);
+  var todayJobs=arr.filter(function(j){return j.date===todayStr;});
+  var weekJobs=arr.filter(function(j){return new Date(j.date)>=wAgo;});
+  var monthJobs=arr.filter(function(j){return new Date(j.date)>=mAgo;});
   document.getElementById('dash-stats').innerHTML=
-    dc(arr.filter(function(j){return j.date===todayStr;}).length,'Today','Jobs received today')+
-    dc(arr.filter(function(j){return new Date(j.date)>=wAgo;}).length,'This week','Last 7 days')+
-    dc(arr.filter(function(j){return new Date(j.date)>=mAgo;}).length,'This month','Last 30 days')+
-    dc(arr.length,'Total jobs','All time')+
-    dc(arr.filter(function(j){return j.status!=='Completed';}).length,'Open jobs','Active')+
-    dc(arr.filter(function(j){return j.status==='Completed';}).length,'Completed','All time');
+    dc(todayJobs.length,'Today','Jobs received today','blue')+
+    dc(weekJobs.length,'This week','Last 7 days','blue')+
+    dc(monthJobs.length,'This month','Last 30 days','blue')+
+    dc(arr.length,'Total jobs','All time','blue')+
+    dc(arr.filter(function(j){return j.status!=='Completed';}).length,'Open jobs','Active','orange')+
+    dc(arr.filter(function(j){return j.status==='Completed';}).length,'Completed','All time','green')+
+    dc(arr.filter(function(j){return j.status==='Awaiting Parts';}).length,'Awaiting parts','Active','red')+
+    dc(arr.filter(function(j){return j.priority==='URGENT';}).length,'Urgent jobs','Active','red');
+  // Financial summary
+  var todayRev=todayJobs.reduce(function(s,j){return s+(j.grandTotal||0);},0);
+  var weekRev=weekJobs.reduce(function(s,j){return s+(j.grandTotal||0);},0);
+  var monthRev=monthJobs.reduce(function(s,j){return s+(j.grandTotal||0);},0);
+  var totalRev=arr.reduce(function(s,j){return s+(j.grandTotal||0);},0);
+  document.getElementById('dash-fin-stats').innerHTML=
+    dc('SCR '+todayRev.toFixed(0),'Revenue today','Jobs completed today','green')+
+    dc('SCR '+weekRev.toFixed(0),'Revenue this week','Last 7 days','green')+
+    dc('SCR '+monthRev.toFixed(0),'Revenue this month','Last 30 days','green')+
+    dc('SCR '+totalRev.toFixed(0),'Total revenue','All time','green');
+  // Status bars
   var statuses=['Received','In Diagnosis','In Repair','Awaiting Parts','QC Check','Ready for Collection','Completed'];
   var sCounts=statuses.map(function(s){return{label:s,count:arr.filter(function(j){return j.status===s;}).length};});
   var maxS=Math.max(1,Math.max.apply(null,sCounts.map(function(x){return x.count;})));
   document.getElementById('status-bars').innerHTML=sCounts.map(function(x){return barRow(x.label,x.count,maxS,'#FFD700');}).join('');
+  // Daily
   var days=[],dC=[];for(var i=13;i>=0;i--){var dt=new Date();dt.setDate(dt.getDate()-i);var ds=dt.toISOString().split('T')[0];days.push(ds.slice(5));dC.push(arr.filter(function(j){return j.date===ds;}).length);}
   var maxD=Math.max(1,Math.max.apply(null,dC));document.getElementById('daily-bars').innerHTML=days.map(function(d,i){return barRow(d,dC[i],maxD,'#17a2b8');}).join('');
+  // Weekly
   var wks=[],wC=[];for(var w=7;w>=0;w--){var ws2=new Date();ws2.setDate(ws2.getDate()-w*7-6);var we2=new Date();we2.setDate(we2.getDate()-w*7);wks.push(w===0?'This wk':'W-'+w);wC.push(arr.filter(function(j){var jd=new Date(j.date);return jd>=ws2&&jd<=we2;}).length);}
   var maxW=Math.max(1,Math.max.apply(null,wC));document.getElementById('weekly-bars').innerHTML=wks.map(function(w,i){return barRow(w,wC[i],maxW,'#28a745');}).join('');
+  // Monthly
   var months=[],mC=[],mN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   for(var mo=11;mo>=0;mo--){var mn=new Date();mn.setMonth(mn.getMonth()-mo);var yr=mn.getFullYear(),mm=mn.getMonth();months.push(mN[mm]+(yr!==new Date().getFullYear()?' \''+String(yr).slice(-2):''));mC.push(arr.filter(function(j){var jd=new Date(j.date);return jd.getFullYear()===yr&&jd.getMonth()===mm;}).length);}
   var maxM=Math.max(1,Math.max.apply(null,mC));document.getElementById('monthly-bars').innerHTML=months.map(function(mn,i){return barRow(mn,mC[i],maxM,'#fd7e14');}).join('');
 }
-function dc(n,l,s){return'<div class="dash-card"><div class="dash-num">'+n+'</div><div class="dash-lbl">'+l+'</div><div class="dash-sub">'+s+'</div></div>';}
-function barRow(l,c,max,col){var pct=Math.round((c/max)*100);return'<div class="bar-row"><div class="bar-lbl">'+l+'</div><div class="bar-outer"><div class="bar-inner" style="width:'+pct+'%;background:'+col+'"></div></div><div class="bar-val">'+c+'</div></div>';}
 
-// ══════════════════════════════════════════════
-//  WORKLOAD
-// ══════════════════════════════════════════════
+function renderDetailedDash(arr){
+  var completed=arr.filter(function(j){return j.status==='Completed';});
+  var totalRev=arr.reduce(function(s,j){return s+(j.grandTotal||0);},0);
+  var completedRev=completed.reduce(function(s,j){return s+(j.grandTotal||0);},0);
+  var avgJobVal=arr.length?totalRev/arr.length:0;
+  var avgRepairTime=0;
+  var timeable=completed.filter(function(j){return j.date&&j.dateCollected;});
+  if(timeable.length){avgRepairTime=timeable.reduce(function(s,j){return s+Math.round((new Date(j.dateCollected)-new Date(j.date))/(864e5));},0)/timeable.length;}
+  var openJobs=arr.filter(function(j){return j.status!=='Completed';}).length;
+  var awaitingQuote=arr.filter(function(j){return j.status==='In Diagnosis';}).length;
+  var partsWaiting=arr.filter(function(j){return j.status==='Awaiting Parts';}).length;
+  // Financial KPIs
+  document.getElementById('kpi-financial').innerHTML=
+    kpiCard('Revenue (all time)','SCR '+totalRev.toFixed(2),'Total invoiced value of all jobs')+
+    kpiCard('Revenue (completed)','SCR '+completedRev.toFixed(2),'Jobs marked Completed')+
+    kpiCard('Avg job value','SCR '+avgJobVal.toFixed(2),'Average across all jobs')+
+    kpiCard('Pending revenue','SCR '+(totalRev-completedRev).toFixed(2),'Value of open jobs');
+  // Quarterly & yearly revenue
+  var now=new Date();
+  var qStart=new Date(now.getFullYear(),Math.floor(now.getMonth()/3)*3,1);
+  var yStart=new Date(now.getFullYear(),0,1);
+  var qRev=arr.filter(function(j){return new Date(j.date)>=qStart;}).reduce(function(s,j){return s+(j.grandTotal||0);},0);
+  var yRev=arr.filter(function(j){return new Date(j.date)>=yStart;}).reduce(function(s,j){return s+(j.grandTotal||0);},0);
+  // Operational KPIs
+  document.getElementById('kpi-operational').innerHTML=
+    kpiCard('Avg repair time',avgRepairTime.toFixed(1)+' days','Days from receipt to collection (completed jobs)')+
+    kpiCard('Open jobs',openJobs,'Currently in progress')+
+    kpiCard('Awaiting quotation approval',awaitingQuote,'In Diagnosis — pending quote')+
+    kpiCard('Awaiting parts',partsWaiting,'Jobs on hold for parts')+
+    kpiCard('Q'+Math.ceil((now.getMonth()+1)/3)+' revenue','SCR '+qRev.toFixed(2),'Current quarter')+
+    kpiCard('Year to date','SCR '+yRev.toFixed(2),'Revenue this year');
+  // Revenue bars by month
+  var revMonths=[],revC=[],mN2=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  for(var mo=11;mo>=0;mo--){var mn2=new Date();mn2.setMonth(mn2.getMonth()-mo);var yr2=mn2.getFullYear(),mm2=mn2.getMonth();revMonths.push(mN2[mm2]+(yr2!==new Date().getFullYear()?' \''+String(yr2).slice(-2):''));revC.push(arr.filter(function(j){var jd=new Date(j.date);return jd.getFullYear()===yr2&&jd.getMonth()===mm2;}).reduce(function(s,j){return s+(j.grandTotal||0);},0));}
+  var maxRev=Math.max(1,Math.max.apply(null,revC));document.getElementById('revenue-bars').innerHTML=revMonths.map(function(mn2,i){return barRow(mn2,'SCR '+revC[i].toFixed(0),maxRev,'#28a745',revC[i]);}).join('');
+  // Machine model frequency
+  var modelCount={};arr.forEach(function(j){if(j.eqModel)modelCount[j.eqModel]=(modelCount[j.eqModel]||0)+1;});
+  var modelArr=Object.entries(modelCount).sort(function(a,b){return b[1]-a[1];}).slice(0,10);
+  var maxMod=modelArr.length?modelArr[0][1]:1;document.getElementById('model-bars').innerHTML=modelArr.map(function(m){return barRow(m[0],m[1],maxMod,'#FFD700');}).join('');
+  // Parts frequency
+  var partsCount={};arr.forEach(function(j){(j.parts||[]).forEach(function(p){if(p.desc&&p.purpose!=='Issued to Tech')partsCount[p.desc]=(partsCount[p.desc]||0)+(p.qty||1);});});
+  var partsArr=Object.entries(partsCount).sort(function(a,b){return b[1]-a[1];}).slice(0,10);
+  var maxParts=partsArr.length?partsArr[0][1]:1;document.getElementById('parts-bars').innerHTML=partsArr.map(function(p){return barRow(p[0],p[1],maxParts,'#17a2b8');}).join('');
+  // Technician jobs
+  var techCount={};arr.forEach(function(j){var t=j.tech||'Unassigned';techCount[t]=(techCount[t]||0)+1;});
+  var techArr=Object.entries(techCount).sort(function(a,b){return b[1]-a[1];});
+  var maxTech=techArr.length?techArr[0][1]:1;document.getElementById('tech-bars').innerHTML=techArr.map(function(t){return barRow(t[0],t[1],maxTech,'#6f42c1');}).join('');
+  // Customer KPIs
+  var custMap2={};arr.forEach(function(j){if(j.custName){if(!custMap2[j.custName])custMap2[j.custName]=0;custMap2[j.custName]++;;}});
+  var topCusts=Object.entries(custMap2).sort(function(a,b){return b[1]-a[1];}).slice(0,5);
+  document.getElementById('kpi-customers').innerHTML=
+    kpiCard('Total customers',Object.keys(custMap2).length,'Unique customer accounts')+
+    kpiCard('Top customers',topCusts.map(function(c){return c[0]+' ('+c[1]+')'}).join('<br>'),'By number of jobs');
+}
+
+function dc(n,l,s,col){return'<div class="dash-card"><div class="dash-num '+(col||'')+'" style="font-size:22px">'+n+'</div><div class="dash-lbl">'+l+'</div><div class="dash-sub">'+s+'</div></div>';}
+function barRow(label,count,max,color,rawVal){
+  var display=rawVal!==undefined?count:count;
+  var pct=Math.round(((rawVal!==undefined?rawVal:count)/max)*100);
+  return'<div class="bar-row"><div class="bar-lbl" title="'+esc(label)+'">'+esc(String(label).length>12?String(label).slice(0,12)+'…':label)+'</div><div class="bar-outer"><div class="bar-inner" style="width:'+pct+'%;background:'+color+'"></div></div><div class="bar-val">'+display+'</div></div>';
+}
+function kpiCard(title,val,desc){return'<div class="kpi-card"><div class="kpi-title">'+title+'</div><div style="font-size:18px;font-weight:700;color:#1a1a1a;margin-bottom:4px">'+val+'</div><div style="font-size:11px;color:#888">'+desc+'</div></div>';}
+
+// ══════════════════════════════════════════
+// WORKLOAD
+// ══════════════════════════════════════════
 function renderWorkload(){
   var arr=visibleJobs(),techs={},todayStr=today(),now=new Date();now.setHours(0,0,0,0);
   arr.filter(function(j){return j.status!=='Completed';}).forEach(function(j){var t=j.tech||'Unassigned';if(!techs[t])techs[t]={R:0,IR:0,AP:0,QR:0};if(j.status==='Received')techs[t].R++;else if(j.status==='In Diagnosis'||j.status==='In Repair')techs[t].IR++;else if(j.status==='Awaiting Parts')techs[t].AP++;else techs[t].QR++;});
@@ -1085,78 +1307,141 @@ function renderWorkload(){
   var overdue=arr.filter(function(j){return j.collectBy&&(j.status==='Ready for Collection'||j.status==='Completed');});
   var odTb=document.getElementById('od-body'),odEmpty=document.getElementById('od-empty');
   if(!overdue.length){odTb.innerHTML='';odEmpty.style.display='block';}
-  else{odEmpty.style.display='none';odTb.innerHTML=overdue.map(function(j){var cb=new Date(j.collectBy);cb.setHours(0,0,0,0);var diff=Math.round((now-cb)/(864e5));var cls=diff>0?'countdown-over':diff===0?'countdown-warn':'countdown-ok';var lbl=diff>0?'+'+diff+' days overdue':diff===0?'Due today':Math.abs(diff)+' days left';return'<tr class="'+(diff>0?'overdue-row':'')+'"><td style="font-family:monospace;font-size:11px">'+j.ref+'</td><td>'+esc(j.custName||'')+'</td><td>'+esc(j.eqModel||'')+'</td><td><span class="badge '+(j.status==='Completed'?'b-done':'b-qc')+'">'+j.status+'</span></td><td>'+(j.dateReady||'—')+'</td><td>'+j.collectBy+'</td><td class="'+cls+'">'+lbl+'</td><td>'+(canEdit(j)?'<button class="btn warning small" onclick="editJob(\''+j.ref+'\')">&#9998;</button>':'')+'</td></tr>';}).join('');}
-  var daily=arr.filter(function(j){return j.date===todayStr;});var dl=document.getElementById('daily-list');
+  else{odEmpty.style.display='none';odTb.innerHTML=overdue.map(function(j){var cb=new Date(j.collectBy);cb.setHours(0,0,0,0);var diff=Math.round((now-cb)/(864e5));var cls=diff>0?'countdown-over':diff===0?'countdown-warn':'countdown-ok';var lbl=diff>0?'+'+diff+' days overdue':diff===0?'Due today':Math.abs(diff)+' days left';return'<tr class="'+(diff>0?'overdue-row':'')+'"><td style="font-family:monospace;font-size:11px">'+esc(j.ref)+'</td><td>'+esc(j.custName||'')+'</td><td>'+esc(j.eqModel||'')+'</td><td><span class="badge '+(j.status==='Completed'?'b-done':'b-qc')+'">'+esc(j.status)+'</span></td><td>'+(j.dateReady||'—')+'</td><td>'+esc(j.collectBy)+'</td><td class="'+cls+'">'+lbl+'</td><td>'+(canEdit(j)?'<button class="btn warning small" onclick="editJob(\''+j.ref+'\')">&#9998;</button>':'')+'</td></tr>';}).join('');}
+  var daily=arr.filter(function(j){return j.date===todayStr;});
+  var dl=document.getElementById('daily-list');
   if(!daily.length){dl.innerHTML='<div class="empty" style="padding:.75rem">No jobs received today.</div>';return;}
-  dl.innerHTML=daily.map(function(j){return'<div class="log-row"><div class="log-ref">'+j.ref+'</div><div class="log-info"><div class="log-name">'+esc(j.custName||'')+' — '+esc(j.eqModel||'')+'</div><div class="log-meta">'+(j.tech?esc(j.tech):'Unassigned')+' &nbsp;·&nbsp; '+esc(j.priority||'')+'</div></div><span class="badge b-prog">'+esc(j.status||'')+'</span></div>';}).join('');
+  dl.innerHTML=daily.map(function(j){return'<div class="log-row"><div class="log-ref">'+esc(j.ref)+'</div><div class="log-info"><div class="log-name">'+esc(j.custName||'')+' — '+esc(j.eqModel||'')+'</div><div class="log-meta">'+(j.tech?esc(j.tech):'Unassigned')+' &nbsp;·&nbsp; '+esc(j.priority||'')+'</div></div><span class="badge b-prog">'+esc(j.status||'')+'</span></div>';}).join('');
 }
 
-// ══════════════════════════════════════════════
-//  PARTS TRACKER
-// ══════════════════════════════════════════════
-function renderParts(){
-  var fs=v('parts-filter-status'),ft=v('parts-filter-type'),fq=(v('parts-search')||'').toLowerCase();
-  var all=visibleJobs().reduce(function(a,j){return a.concat((j.parts||[]).filter(function(p){return p.purpose==='Required';}).map(function(p){return Object.assign({},p,{ref:j.ref,cust:j.custName,phone:j.custPhone,model:j.eqModel,partNo:j.eqSerial,serial:j.eqSN});}));}, []);
-  var filtered=all.filter(function(p){if(fs&&p.status!==fs)return false;if(ft&&(p.itype||'Part')!==ft)return false;if(fq&&(p.desc||'').toLowerCase().indexOf(fq)===-1&&(p.ref||'').toLowerCase().indexOf(fq)===-1&&(p.cust||'').toLowerCase().indexOf(fq)===-1&&(p.pn||'').toLowerCase().indexOf(fq)===-1)return false;return true;});
-  var tb=document.getElementById('pt-body'),empty=document.getElementById('pt-empty'),tbl=document.getElementById('pt-table');
-  if(!filtered.length){tb.innerHTML='';tbl.style.display='none';empty.style.display='block';return;}
-  tbl.style.display='';empty.style.display='none';
+// ══════════════════════════════════════════
+// TRACKERS
+// ══════════════════════════════════════════
+function renderTrackers(){
+  var arr=visibleJobs();
+  // Issued tracker
+  var iSearch=(v('issued-search')||'').toLowerCase();
+  var iTech=v('issued-f-tech');
+  var issued=arr.reduce(function(a,j){return a.concat((j.parts||[]).filter(function(p){return p.purpose==='Issued to Tech';}).map(function(p){return Object.assign({},p,{ref:j.ref,cust:j.custName,model:j.eqModel});
+  }));}, []).filter(function(p){
+    if(iTech&&(p.issuedTo||'')!==iTech)return false;
+    if(iSearch&&(p.desc||'').toLowerCase().indexOf(iSearch)===-1&&(p.ref||'').toLowerCase().indexOf(iSearch)===-1&&(p.issuedTo||'').toLowerCase().indexOf(iSearch)===-1)return false;
+    return true;
+  });
+  var iTb=document.getElementById('issued-body'),iE=document.getElementById('issued-empty');
+  if(!issued.length){iTb.innerHTML='';iE.style.display='block';}
+  else{iE.style.display='none';iTb.innerHTML=issued.map(function(p,i){var bg=i%2===0?'':'background:#fafafa';return'<tr style="'+bg+'"><td style="font-family:monospace;font-size:11px">'+esc(p.ref)+'</td><td>'+esc(p.cust||'')+'</td><td>'+esc(p.model||'')+'</td><td>'+esc(p.desc||'')+'</td><td style="font-family:monospace;font-size:11px">'+(p.pn||'—')+'</td><td style="text-align:center">'+p.qty+'</td><td>'+esc(p.issuedTo||'—')+'</td><td>'+esc(p.dt||'—')+'</td><td>'+(p.supplier||'—')+'</td></tr>';}).join('');}
+  // Order tracker
+  var oSearch=(v('order-search')||'').toLowerCase(),oStatus=v('order-f-status');
+  var ordered=arr.reduce(function(a,j){return a.concat((j.parts||[]).filter(function(p){return p.purpose==='To Order'||((p.status==='Ordered'||p.status==='Awaiting import')&&p.purpose==='Required');}).map(function(p){return Object.assign({},p,{ref:j.ref,cust:j.custName,model:j.eqModel});}));}, []).filter(function(p){
+    if(oStatus&&(p.status||'')!==oStatus)return false;
+    if(oSearch&&(p.desc||'').toLowerCase().indexOf(oSearch)===-1&&(p.ref||'').toLowerCase().indexOf(oSearch)===-1)return false;
+    return true;
+  });
+  var sTb=document.getElementById('order-body'),oE=document.getElementById('order-empty');
   var sB={'Awaiting import':'b-parts','Ordered':'b-open','Received':'b-done','In stock':'b-prog'};
-  tb.innerHTML=filtered.map(function(p,i){var bg=i%2===0?'':'background:#fafafa';return'<tr style="'+bg+'"><td style="font-family:monospace;font-size:11px">'+esc(p.ref)+'</td><td>'+esc(p.cust||'')+'</td><td style="font-size:11px">'+(p.phone||'—')+'</td><td>'+esc(p.model||'')+'</td><td style="font-family:monospace;font-size:11px">'+(p.partNo||'—')+'</td><td style="font-family:monospace;font-size:11px">'+(p.serial||'—')+'</td><td>'+esc(p.desc||'')+'</td><td><span class="badge '+(p.itype==='Accessory'?'b-qc':'b-prog')+'">'+(p.itype||'Part')+'</span></td><td>'+p.qty+'</td><td style="text-align:right">'+(p.price?(+p.price).toFixed(2):'—')+'</td><td><span class="badge '+(sB[p.status]||'b-qc')+'">'+esc(p.status||'')+'</span></td></tr>';}).join('');
+  if(!ordered.length){sTb.innerHTML='';oE.style.display='block';}
+  else{oE.style.display='none';sTb.innerHTML=ordered.map(function(p,i){var bg=i%2===0?'':'background:#fafafa';return'<tr style="'+bg+'"><td style="font-family:monospace;font-size:11px">'+esc(p.ref)+'</td><td>'+esc(p.cust||'')+'</td><td>'+esc(p.model||'')+'</td><td>'+esc(p.desc||'')+'</td><td style="font-family:monospace;font-size:11px">'+(p.pn||'—')+'</td><td style="text-align:center">'+p.qty+'</td><td style="text-align:right">'+(p.price?(+p.price).toFixed(2):'—')+'</td><td><span class="badge '+(sB[p.status]||'b-qc')+'">'+esc(p.status||'')+'</span></td><td>'+(p.supplier||'—')+'</td><td>'+(p.purpose==='To Order'?'<span class="badge b-parts">Import/Order</span>':'<span class="badge b-prog">Required</span>')+'</td></tr>';}).join('');}
+  // Local sourcing
+  var lSearch=(v('local-search')||'').toLowerCase();
+  var local=arr.reduce(function(a,j){return a.concat((j.parts||[]).filter(function(p){return p.supplier&&p.purpose==='Required'&&p.status!=='Awaiting import';}).map(function(p){return Object.assign({},p,{ref:j.ref,cust:j.custName,model:j.eqModel});}));}, []).filter(function(p){
+    if(lSearch&&(p.desc||'').toLowerCase().indexOf(lSearch)===-1&&(p.supplier||'').toLowerCase().indexOf(lSearch)===-1)return false;
+    return true;
+  });
+  var lTb=document.getElementById('local-body'),lE=document.getElementById('local-empty');
+  if(!local.length){lTb.innerHTML='';lE.style.display='block';}
+  else{lE.style.display='none';lTb.innerHTML=local.map(function(p,i){var bg=i%2===0?'':'background:#fafafa';return'<tr style="'+bg+'"><td style="font-family:monospace;font-size:11px">'+esc(p.ref)+'</td><td>'+esc(p.cust||'')+'</td><td>'+esc(p.model||'')+'</td><td>'+esc(p.desc||'')+'</td><td style="font-family:monospace;font-size:11px">'+(p.pn||'—')+'</td><td style="text-align:center">'+p.qty+'</td><td style="text-align:right">'+(p.price?(+p.price).toFixed(2):'—')+'</td><td>'+esc(p.supplier||'—')+'</td><td><span class="badge '+(sB[p.status]||'b-qc')+'">'+esc(p.status||'')+'</span></td></tr>';}).join('');}
 }
 
-// ══════════════════════════════════════════════
-//  SPARES ISSUED
-// ══════════════════════════════════════════════
-function renderSpares(){
-  var q=(v('spares-search')||'').toLowerCase();
-  var all=visibleJobs().reduce(function(a,j){return a.concat((j.parts||[]).filter(function(p){return p.purpose==='Issued to Tech';}).map(function(p){return Object.assign({},p,{ref:j.ref,cust:j.custName,model:j.eqModel});}));}, []);
-  var filtered=all.filter(function(s){if(!q)return true;return(s.ref||'').toLowerCase().indexOf(q)>-1||(s.desc||s.item||'').toLowerCase().indexOf(q)>-1||(s.issuedTo||'').toLowerCase().indexOf(q)>-1||(s.cust||'').toLowerCase().indexOf(q)>-1;});
-  var tb=document.getElementById('spares-body'),empty=document.getElementById('spares-empty'),tbl=document.getElementById('spares-table');
-  if(!filtered.length){tb.innerHTML='';tbl.style.display='none';empty.style.display='block';return;}
-  tbl.style.display='';empty.style.display='none';
-  tb.innerHTML=filtered.map(function(s,i){var bg=i%2===0?'':'background:#fafafa';return'<tr style="'+bg+'"><td style="font-family:monospace;font-size:11px">'+esc(s.ref)+'</td><td>'+esc(s.cust||'')+'</td><td>'+esc(s.model||'')+'</td><td>'+esc(s.desc||s.item||'')+'</td><td style="font-family:monospace;font-size:11px">'+(s.pn||'—')+'</td><td>'+s.qty+'</td><td>'+(s.issuedTo||'—')+'</td><td style="font-size:11px">'+(s.dt||'—')+'</td></tr>';}).join('');
+function downloadTracker(type){
+  var Y='#FFD700',YL='#FFF8D6',GM='#e0e0e0',W='#fff',GL='#f5f5f5',BD='1px solid #bbb';
+  var arr=visibleJobs();var rows='',title='',headers=[];
+  if(type==='issued'){
+    title='SPARES ISSUED TO TECHNICIANS';
+    headers=['Job Ref','Customer','Machine','Item / Part','Part Number','Qty','Issued To','Date & Time','Supplier'];
+    var data=arr.reduce(function(a,j){return a.concat((j.parts||[]).filter(function(p){return p.purpose==='Issued to Tech';}).map(function(p){return[j.ref,j.custName,j.eqModel,p.desc,p.pn||'',p.qty,p.issuedTo||'',p.dt||'',p.supplier||''];}));}, []);
+    rows=data.map(function(r,i){var bg=i%2===0?W:GL;return'<tr style="background:'+bg+'">'+r.map(function(c){return'<td style="font-size:9pt;padding:4px 7px;border:'+BD+'">'+esc(c)+'</td>';}).join('')+'</tr>';}).join('');
+  }else if(type==='order'){
+    title='PARTS TO ORDER / IMPORT';
+    headers=['Job Ref','Customer','Machine','Description','Part Number','Qty','Price (SCR)','Status','Supplier','Source'];
+    var data2=arr.reduce(function(a,j){return a.concat((j.parts||[]).filter(function(p){return p.purpose==='To Order'||((p.status==='Ordered'||p.status==='Awaiting import')&&p.purpose==='Required');}).map(function(p){return[j.ref,j.custName,j.eqModel,p.desc,p.pn||'',p.qty,p.price?(+p.price).toFixed(2):'',p.status||'',p.supplier||'',p.purpose==='To Order'?'Import/Order':'Required'];}));}, []);
+    rows=data2.map(function(r,i){var bg=i%2===0?W:GL;return'<tr style="background:'+bg+'">'+r.map(function(c){return'<td style="font-size:9pt;padding:4px 7px;border:'+BD+'">'+esc(c)+'</td>';}).join('')+'</tr>';}).join('');
+  }else{
+    title='LOCALLY SOURCED PARTS';
+    headers=['Job Ref','Customer','Machine','Description','Part Number','Qty','Price (SCR)','Supplier','Status'];
+    var data3=arr.reduce(function(a,j){return a.concat((j.parts||[]).filter(function(p){return p.supplier&&p.purpose==='Required'&&p.status!=='Awaiting import';}).map(function(p){return[j.ref,j.custName,j.eqModel,p.desc,p.pn||'',p.qty,p.price?(+p.price).toFixed(2):'',p.supplier||'',p.status||''];}));}, []);
+    rows=data3.map(function(r,i){var bg=i%2===0?W:GL;return'<tr style="background:'+bg+'">'+r.map(function(c){return'<td style="font-size:9pt;padding:4px 7px;border:'+BD+'">'+esc(c)+'</td>';}).join('')+'</tr>';}).join('');
+  }
+  if(!rows)rows='<tr><td colspan="'+headers.length+'" style="text-align:center;color:#999;padding:10px;border:'+BD+'">No data.</td></tr>';
+  var html='<html><head><meta charset="UTF-8"></head><body><table style="border-collapse:collapse;font-family:Arial,sans-serif;width:100%">'
+    +'<tr><td colspan="'+headers.length+'" style="background:'+Y+';font-weight:bold;font-size:14pt;text-align:center;padding:8px;border:'+BD+'">DVS INTERNATIONAL COMPANY LIMITED</td></tr>'
+    +'<tr><td colspan="'+headers.length+'" style="background:'+YL+';font-size:9pt;text-align:center;padding:5px;border:'+BD+'">Authorised Kärcher Service Centre | Mahé, Seychelles | Generated: '+new Date().toLocaleDateString()+'</td></tr>'
+    +'<tr><td colspan="'+headers.length+'" style="background:'+Y+';font-weight:bold;font-size:12pt;text-align:center;padding:6px;border:'+BD+'">'+title+'</td></tr>'
+    +'<tr><td colspan="'+headers.length+'" style="height:6px;border:none"></td></tr>'
+    +'<tr style="background:'+GM+'">'+headers.map(function(h){return'<th style="font-size:9pt;padding:5px 7px;border:'+BD+'">'+h+'</th>';}).join('')+'</tr>'
+    +rows
+    +'<tr><td colspan="'+headers.length+'" style="background:'+YL+';font-size:8pt;text-align:center;padding:5px;border:'+BD+';font-style:italic;color:#888">DVS International Company Limited | Authorised Kärcher Service Centre | Mahé, Seychelles</td></tr>'
+    +'</table></body></html>';
+  blobDownload(html,'DVS_'+title.replace(/ /g,'_')+'.xls');
 }
 
-// ══════════════════════════════════════════════
-//  USER MANAGEMENT
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════
+// TECHNICIANS
+// ══════════════════════════════════════════
+function addTechnician(){
+  if(!can('manageUsers')){showPerm();return;}
+  var name=v('tech-name'),phone=v('tech-phone'),email=v('tech-email'),spec=v('tech-spec');
+  if(!name){showTechSt('Name is required.','err');return;}
+  var id='tech_'+Date.now();
+  db.ref('technicians/'+id).set({id:id,name:name,phone:phone,email:email,spec:spec,active:true,createdAt:new Date().toISOString()}).then(function(){
+    showTechSt('Technician '+name+' added.','ok');
+    ['tech-name','tech-phone','tech-email'].forEach(function(i){document.getElementById(i).value='';});
+  }).catch(function(e){showTechSt('Error: '+e.message,'err');});
+}
+function renderTechList(){
+  var el=document.getElementById('tech-list');
+  var arr=Object.values(technicians);
+  if(!arr.length){el.innerHTML='<div class="empty">No technicians added yet.</div>';return;}
+  el.innerHTML=arr.map(function(t){
+    return'<div class="user-row"><div class="user-info"><div class="user-name">'+esc(t.name)+(t.spec?' <span style="font-size:11px;color:#888;font-weight:400">— '+esc(t.spec)+'</span>':'')+'</div><div class="user-email">'+(t.phone||'')+(t.email?' | '+t.email:'')+'</div></div>'
+      +'<span class="badge '+(t.active?'b-done':'b-qc')+'">'+(t.active?'Active':'Inactive')+'</span>'
+      +(can('manageUsers')?'<button class="btn small" onclick="toggleTech(\''+t.id+'\','+(!t.active)+')">'+(t.active?'Deactivate':'Activate')+'</button>':'')
+      +(can('manageUsers')?'<button class="btn danger small" onclick="deleteTech(\''+t.id+'\')">&#128465;</button>':'')
+      +'</div>';
+  }).join('');
+}
+function toggleTech(id,val){db.ref('technicians/'+id+'/active').set(val);}
+function deleteTech(id){if(!confirm('Remove this technician?'))return;db.ref('technicians/'+id).remove();}
+function showTechSt(m,t){t=t||'ok';var el=document.getElementById('tech-st');el.className='st show '+t;el.innerHTML=(t==='ok'?'&#10003; ':'&#9888; ')+m;setTimeout(function(){el.classList.remove('show');},4000);}
+
+// ══════════════════════════════════════════
+// USER MANAGEMENT
+// ══════════════════════════════════════════
 function createUser(){
-  if(!can('manageUsers')){showPermDenied();return;}
-  var email=v('new-user-email'),name=v('new-user-name'),role=v('new-user-role'),pass=v('new-user-pass'),vis=v('new-user-visibility');
-  if(!email||!name||!pass){showUserSt('Please fill in all fields.','err');return;}
+  if(!can('manageUsers')){showPerm();return;}
+  var email=v('new-user-email'),name=v('new-user-name'),role=v('new-user-role'),pass=v('new-user-pass'),vis=v('new-user-vis');
+  if(!email||!name||!pass){showUserSt('Please fill all fields.','err');return;}
   if(pass.length<6){showUserSt('Password must be at least 6 characters.','err');return;}
-  // Create auth user via Firebase — note: this signs out current user in client SDK
-  // We use a secondary app instance to avoid signing out current admin
   var secondaryApp;
-  try{
-    secondaryApp=firebase.initializeApp(firebase.app().options,'secondary'+Date.now());
-  }catch(e){secondaryApp=firebase.app('secondary');}
+  try{secondaryApp=firebase.initializeApp(firebase.app().options,'sec'+Date.now());}catch(e){secondaryApp=firebase.app('secondary');}
   secondaryApp.auth().createUserWithEmailAndPassword(email,pass).then(function(cred){
-    var uid=cred.user.uid;
-    return db.ref('users/'+uid).set({name:name,email:email,role:role,visibility:vis,createdAt:new Date().toISOString(),createdBy:currentUser.uid});
+    return db.ref('users/'+cred.user.uid).set({name:name,email:email,role:role,visibility:vis,createdAt:new Date().toISOString(),createdBy:currentUser.uid});
   }).then(function(){
     secondaryApp.auth().signOut();
-    showUserSt('User '+name+' ('+role+') created successfully.','ok');
+    showUserSt('User '+name+' ('+role+') created.','ok');
     ['new-user-email','new-user-name','new-user-pass'].forEach(function(id){document.getElementById(id).value='';});
     renderUsers();
   }).catch(function(e){showUserSt('Error: '+e.message,'err');});
 }
-
-function renderUsers(usersData){
-  if(!usersData){
-    db.ref('users').once('value',function(snap){renderUsers(snap.val()||{});});return;
-  }
+function renderUsers(){
   var el=document.getElementById('users-list');
-  var arr=Object.entries(usersData);
+  var arr=Object.entries(users||{});
   if(!arr.length){el.innerHTML='<div class="empty">No users yet.</div>';return;}
   el.innerHTML=arr.map(function(entry){
-    var uid=entry[0],u=entry[1];
-    var isSelf=uid===currentUser.uid;
-    return'<div class="user-row">'
-      +'<div class="user-info"><div class="user-name">'+esc(u.name||'—')+(isSelf?' <span style="font-size:10px;color:#aaa">(you)</span>':'')+'</div><div class="user-email">'+esc(u.email||'—')+'</div></div>'
+    var uid=entry[0],u=entry[1],isSelf=uid===currentUser.uid;
+    return'<div class="user-row"><div class="user-info"><div class="user-name">'+esc(u.name||'—')+(isSelf?' <span style="font-size:10px;color:#aaa">(you)</span>':'')+'</div><div class="user-email">'+esc(u.email||'—')+'</div></div>'
       +'<span class="role-badge role-'+(u.role||'viewer')+'">'+esc(u.role||'viewer')+'</span>'
-      +'<span style="font-size:11px;color:#888;margin:0 6px">'+(u.visibility==='own'?'Own jobs only':'All jobs')+'</span>'
+      +'<span style="font-size:11px;color:#888;margin:0 6px">'+(u.visibility==='own'?'Own jobs':'All jobs')+'</span>'
       +'<select onchange="updateUserField(\''+uid+'\',\'role\',this.value)" style="font-size:11px;border:1px solid #ccc;border-radius:4px;padding:3px 5px;background:#fff"'+(isSelf?' disabled':'')+'>'
       +['admin','manager','technician','viewer'].map(function(r){return'<option value="'+r+'"'+(u.role===r?' selected':'')+'>'+r+'</option>';}).join('')
       +'</select>'
@@ -1168,163 +1453,106 @@ function renderUsers(usersData){
       +'</div>';
   }).join('');
 }
-function updateUserField(uid,field,val){db.ref('users/'+uid+'/'+field).set(val).catch(function(e){showUserSt('Update failed: '+e.message,'err');});}
-function deleteUser(uid){
-  if(!confirm('Remove this user from the system?')) return;
-  db.ref('users/'+uid).remove().then(function(){renderUsers();showUserSt('User removed.','ok');}).catch(function(e){showUserSt('Error: '+e.message,'err');});
-}
-function showUserSt(msg,type){type=type||'ok';var el=document.getElementById('users-st');el.className='st show '+type;el.innerHTML=(type==='ok'?'&#10003; ':'&#9888; ')+msg;setTimeout(function(){el.classList.remove('show');},5000);}
+function updateUserField(uid,field,val){db.ref('users/'+uid+'/'+field).set(val).catch(function(e){showUserSt('Error: '+e.message,'err');});}
+function deleteUser(uid){if(!confirm('Remove this user?'))return;db.ref('users/'+uid).remove().then(function(){renderUsers();showUserSt('User removed.','ok');}).catch(function(e){showUserSt('Error: '+e.message,'err');});}
+function showUserSt(m,t){t=t||'ok';var el=document.getElementById('users-st');el.className='st show '+t;el.innerHTML=(t==='ok'?'&#10003; ':'&#9888; ')+m;setTimeout(function(){el.classList.remove('show');},5000);}
 
-// ══════════════════════════════════════════════
-//  PARTS TRACKER DOWNLOAD
-// ══════════════════════════════════════════════
-function downloadPartsTracker(){
-  var fs=v('parts-filter-status'),ft=v('parts-filter-type');
-  var all=visibleJobs().reduce(function(a,j){return a.concat((j.parts||[]).filter(function(p){return p.purpose==='Required';}).map(function(p){return Object.assign({},p,{ref:j.ref,cust:j.custName,phone:j.custPhone,model:j.eqModel,partNo:j.eqSerial,serial:j.eqSN});}));}, []);
-  var filtered=all.filter(function(p){if(fs&&p.status!==fs)return false;if(ft&&(p.itype||'Part')!==ft)return false;return true;});
-  var Y='#FFD700',YL='#FFF8D6',GM='#e0e0e0',W='#fff',GL='#f5f5f5',BD='1px solid #bbb';
-  var rows=filtered.map(function(p,i){var bg=i%2===0?W:GL;return'<tr style="background:'+bg+'"><td style="font-family:monospace;font-size:9pt;padding:4px 7px;border:'+BD+'">'+esc(p.ref)+'</td><td style="font-size:9pt;padding:4px 7px;border:'+BD+'">'+esc(p.cust||'')+'</td><td style="font-size:9pt;padding:4px 7px;border:'+BD+'">'+(p.phone||'')+'</td><td style="font-size:9pt;padding:4px 7px;border:'+BD+'">'+esc(p.model||'')+'</td><td style="font-family:monospace;font-size:9pt;padding:4px 7px;border:'+BD+'">'+(p.partNo||'—')+'</td><td style="font-family:monospace;font-size:9pt;padding:4px 7px;border:'+BD+'">'+(p.serial||'—')+'</td><td style="font-size:9pt;padding:4px 7px;border:'+BD+'">'+esc(p.desc||'')+'</td><td style="text-align:center;font-size:9pt;padding:4px 7px;border:'+BD+'">'+(p.itype||'Part')+'</td><td style="text-align:center;font-size:9pt;padding:4px 7px;border:'+BD+'">'+p.qty+'</td><td style="text-align:right;font-size:9pt;padding:4px 7px;border:'+BD+'">'+(p.price?(+p.price).toFixed(2):'—')+'</td><td style="text-align:center;font-size:9pt;padding:4px 7px;border:'+BD+'">'+esc(p.status||'')+'</td></tr>';}).join('');
-  if(!rows) rows='<tr><td colspan="11" style="text-align:center;color:#999;padding:10px;border:'+BD+'">No parts match filters.</td></tr>';
-  var html='<html><head><meta charset="UTF-8"></head><body><table style="border-collapse:collapse;font-family:Arial,sans-serif;width:100%">'
-    +'<tr><td colspan="11" style="background:'+Y+';font-weight:bold;font-size:14pt;text-align:center;padding:8px;border:'+BD+'">DVS INTERNATIONAL COMPANY LIMITED</td></tr>'
-    +'<tr><td colspan="11" style="background:'+YL+';font-size:9pt;text-align:center;padding:5px;border:'+BD+'">Authorised Kärcher Service Centre</td></tr>'
-    +'<tr><td colspan="11" style="background:'+Y+';font-weight:bold;font-size:12pt;text-align:center;padding:6px;border:'+BD+'">PARTS AWAITED TRACKER'+(fs?' — '+fs:'')+'</td></tr>'
-    +'<tr><td colspan="11" style="height:6px;border:none"></td></tr>'
-    +'<tr style="background:'+GM+'"><th style="font-size:9pt;padding:5px 7px;border:'+BD+'">Job Ref</th><th style="font-size:9pt;padding:5px 7px;border:'+BD+'">Customer</th><th style="font-size:9pt;padding:5px 7px;border:'+BD+'">Phone</th><th style="font-size:9pt;padding:5px 7px;border:'+BD+'">Machine</th><th style="font-size:9pt;padding:5px 7px;border:'+BD+'">Part No.</th><th style="font-size:9pt;padding:5px 7px;border:'+BD+'">Serial No.</th><th style="font-size:9pt;padding:5px 7px;border:'+BD+'">Description</th><th style="font-size:9pt;padding:5px 7px;border:'+BD+'">Type</th><th style="font-size:9pt;padding:5px 7px;border:'+BD+'">Qty</th><th style="font-size:9pt;padding:5px 7px;border:'+BD+'">Price</th><th style="font-size:9pt;padding:5px 7px;border:'+BD+'">Status</th></tr>'
-    +rows+'<tr><td colspan="11" style="background:'+YL+';font-size:9pt;text-align:center;padding:5px;border:'+BD+';font-style:italic;color:#888">DVS International Company Limited  |  Mahé, Seychelles</td></tr>'
-    +'</table></body></html>';
-  blobDownload(html,'DVS_Parts_Tracker.xls');
-}
-
-// ══════════════════════════════════════════════
-//  JOB CARD DOWNLOAD
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════
+// DOWNLOADS
+// ══════════════════════════════════════════
 function downloadJobCard(d){
-  if(!d) return;
-  var nb=function(v2){return v2||'';};
-  var Y='#FFD700',YL='#FFF8D6',DG='#333333',W='#fff',GL='#f7f7f7',GM='#e4e4e4',GR='#f0f0f0',BD='1px solid #cccccc',OBD='2px solid #888888';
+  if(!d)return;
+  var nb=function(val){return val||'';};
+  var Y='#FFD700',YL='#FFF8D6',DG='#333',W='#fff',GL='#f7f7f7',GM='#e4e4e4',GR='#f0f0f0',BD='1px solid #ccc',OBD='2px solid #888';
   var GREEN='#d4edda',GTEXT='#155724';
-  function hRow(t,bg,fg,cols,fs){return'<tr><td colspan="'+(cols||6)+'" style="background:'+(bg||Y)+';color:'+(fg||'#000')+';font-weight:bold;font-size:'+(fs||'12pt')+';text-align:center;padding:8px 12px;border:'+OBD+'">'+t+'</td></tr>';}
-  function secRow(t){return'<tr><td colspan="6" style="background:'+DG+';color:#fff;font-weight:bold;font-size:10pt;padding:6px 12px;letter-spacing:0.5px;border-top:'+OBD+';border-left:'+OBD+';border-right:'+OBD+';border-bottom:'+BD+'">'+t.toUpperCase()+'</td></tr>';}
+  function hdr2(){return'<tr><td colspan="6" style="background:'+Y+';padding:0;border:'+OBD+'"><table style="width:100%;border-collapse:collapse"><tr><td style="padding:10px 14px;width:80px"><div style="background:#000;color:'+Y+';font-weight:900;font-size:14pt;padding:6px 10px;border-radius:4px;text-align:center;line-height:1.3">KÄRCHER<br><span style="font-size:8pt;letter-spacing:2px">SERVICE</span></div></td><td style="padding:10px 6px"><div style="font-size:15pt;font-weight:900;color:#000">DVS INTERNATIONAL CO. LTD</div><div style="font-size:9pt;color:#333;margin-top:2px">Authorised Kärcher Service Centre | Dekk House, Providence Industrial Estate, P.O. Box 144, Mahé, Seychelles</div><div style="font-size:8pt;color:#555;margin-top:2px">Tel: +248 4 373 488 | Mobile: +248 2 527 230 | karcher@seychelles.net | www.dvsinternational.net</div></td></tr></table></td></tr>';}
+  function sec2(t){return'<tr><td colspan="6" style="background:'+DG+';color:#fff;font-weight:bold;font-size:10pt;padding:6px 12px;letter-spacing:0.5px;border-top:'+OBD+';border-left:'+OBD+';border-right:'+OBD+';border-bottom:'+BD+'">'+t.toUpperCase()+'</td></tr>';}
   function lr(l1,v1,l2,v2){return'<tr><td style="background:'+GL+';font-weight:bold;font-size:9pt;padding:6px 10px;border:'+BD+';white-space:nowrap;width:18%">'+l1+'</td><td style="background:'+W+';font-size:9pt;padding:6px 10px;border:'+BD+';width:28%">'+nb(v1)+'</td><td style="background:'+GL+';font-weight:bold;font-size:9pt;padding:6px 10px;border:'+BD+';white-space:nowrap;width:18%">'+(l2||'')+'</td><td style="background:'+W+';font-size:9pt;padding:6px 10px;border:'+BD+'">'+nb(v2)+'</td></tr>';}
   function lr3(l1,v1,l2,v2,l3,v3){return'<tr><td style="background:'+GL+';font-weight:bold;font-size:9pt;padding:6px 10px;border:'+BD+'">'+l1+'</td><td style="background:'+W+';font-size:9pt;padding:6px 10px;border:'+BD+'">'+nb(v1)+'</td><td style="background:'+GL+';font-weight:bold;font-size:9pt;padding:6px 10px;border:'+BD+'">'+l2+'</td><td style="background:'+W+';font-size:9pt;padding:6px 10px;border:'+BD+'">'+nb(v2)+'</td><td style="background:'+GL+';font-weight:bold;font-size:9pt;padding:6px 10px;border:'+BD+'">'+l3+'</td><td style="background:'+W+';font-size:9pt;padding:6px 10px;border:'+BD+'">'+nb(v3)+'</td></tr>';}
-  function lrFull(label,value){return'<tr><td style="background:'+GL+';font-weight:bold;font-size:9pt;padding:6px 10px;border:'+BD+'">'+label+'</td><td colspan="5" style="background:'+W+';font-size:9pt;padding:6px 10px;border:'+BD+'">'+nb(value)+'</td></tr>';}
+  function lrFull(l,val2){return'<tr><td style="background:'+GL+';font-weight:bold;font-size:9pt;padding:6px 10px;border:'+BD+'">'+l+'</td><td colspan="5" style="background:'+W+';font-size:9pt;padding:6px 10px;border:'+BD+'">'+nb(val2)+'</td></tr>';}
   function blank(){return'<tr><td colspan="6" style="height:6px;background:'+W+';border-left:'+OBD+';border-right:'+OBD+';border-top:none;border-bottom:none"></td></tr>';}
   var dtLabel=d.diagType==='professional'?'Professional / Commercial':'Domestic / Home &amp; Garden';
-  var partsRows='',siRows='';
-  if(d.parts&&d.parts.length){
-    var req=d.parts.filter(function(p){return p.purpose!=='Issued to Tech';});
-    var iss=d.parts.filter(function(p){return p.purpose==='Issued to Tech';});
-    req.forEach(function(p,i){var bg=i%2===0?W:GR;partsRows+='<tr style="background:'+bg+'"><td style="text-align:center;border:'+BD+';font-size:9pt;padding:4px 6px">'+(i+1)+'</td><td style="border:'+BD+';font-size:9pt;padding:4px 6px">'+nb(p.desc)+'</td><td style="font-family:monospace;text-align:center;border:'+BD+';font-size:9pt;padding:4px 6px">'+nb(p.pn)+'</td><td style="text-align:center;border:'+BD+';font-size:9pt;padding:4px 6px">'+(p.itype||'Part')+'</td><td style="text-align:center;border:'+BD+';font-size:9pt;padding:4px 6px">'+p.qty+'</td><td style="text-align:right;border:'+BD+';font-size:9pt;padding:4px 6px">'+(+p.price).toFixed(2)+'</td><td style="text-align:right;border:'+BD+';font-size:9pt;font-weight:bold;padding:4px 6px">'+p.total.toFixed(2)+'</td><td style="text-align:center;border:'+BD+';font-size:9pt;padding:4px 6px">'+nb(p.status)+'</td></tr>';});
-    iss.forEach(function(s,i){var bg=i%2===0?W:'#f0fff4';siRows+='<tr style="background:'+bg+'"><td style="border:'+BD+';font-size:9pt;padding:4px 6px">'+nb(s.desc||s.item)+'</td><td style="font-family:monospace;border:'+BD+';font-size:9pt;padding:4px 6px">'+nb(s.pn)+'</td><td style="text-align:center;border:'+BD+';font-size:9pt;padding:4px 6px">'+nb(s.qty)+'</td><td style="border:'+BD+';font-size:9pt;padding:4px 6px">'+nb(s.issuedTo)+'</td><td style="border:'+BD+';font-size:9pt;padding:4px 6px">'+nb(s.dt)+'</td></tr>';});
-  }
-  if(!partsRows) partsRows='<tr><td colspan="8" style="text-align:center;color:#999;font-size:9pt;padding:8px;border:'+BD+'">No parts recorded</td></tr>';
-  if(!siRows) siRows='<tr><td colspan="5" style="text-align:center;color:#999;font-size:9pt;padding:8px;border:'+BD+'">No spares issued</td></tr>';
-  var costHtml=[['Diagnostics Fee',dtLabel,(d.diagCost||0).toFixed(2)],['Service Type Charge',nb(d.svcType),(d.serviceCost||0).toFixed(2)],['Labour','',(d.labour||0).toFixed(2)],['Spare Parts (total)','',(d.partsSub||0).toFixed(2)],['Accessories (total)','',(d.accSub||0).toFixed(2)]].map(function(r,i){var bg=i%2===0?W:GR;return'<tr style="background:'+bg+'"><td style="font-weight:bold;font-size:9pt;padding:5px 10px;border:'+BD+'">'+r[0]+'</td><td colspan="3" style="font-size:9pt;padding:5px 10px;border:'+BD+'">'+r[1]+'</td><td colspan="2" style="text-align:right;font-size:9pt;padding:5px 10px;border:'+BD+'">SCR '+r[2]+'</td></tr>';}).join('');
+  var reqParts=(d.parts||[]).filter(function(p){return p.purpose!=='Issued to Tech';});
+  var issParts=(d.parts||[]).filter(function(p){return p.purpose==='Issued to Tech';});
+  var partsRows=reqParts.length?reqParts.map(function(p,i){var bg=i%2===0?W:GR;return'<tr style="background:'+bg+'"><td style="text-align:center;border:'+BD+';font-size:9pt;padding:4px 6px">'+(i+1)+'</td><td style="border:'+BD+';font-size:9pt;padding:4px 6px">'+nb(p.desc)+'</td><td style="font-family:monospace;text-align:center;border:'+BD+';font-size:9pt;padding:4px 6px">'+nb(p.pn)+'</td><td style="text-align:center;border:'+BD+';font-size:9pt;padding:4px 6px">'+(p.itype||'Part')+'</td><td style="text-align:center;border:'+BD+';font-size:9pt;padding:4px 6px">'+p.qty+'</td><td style="text-align:right;border:'+BD+';font-size:9pt;padding:4px 6px">'+(+p.price).toFixed(2)+'</td><td style="text-align:right;border:'+BD+';font-size:9pt;font-weight:bold;padding:4px 6px">'+p.total.toFixed(2)+'</td><td style="text-align:center;border:'+BD+';font-size:9pt;padding:4px 6px">'+nb(p.status)+'</td><td style="border:'+BD+';font-size:9pt;padding:4px 6px">'+(p.supplier||'—')+'</td></tr>';}).join(''):'<tr><td colspan="9" style="text-align:center;color:#999;font-size:9pt;padding:8px;border:'+BD+'">No parts recorded</td></tr>';
+  var issRows=issParts.length?issParts.map(function(s,i){var bg=i%2===0?W:'#f0fff4';return'<tr style="background:'+bg+'"><td style="border:'+BD+';font-size:9pt;padding:4px 6px">'+nb(s.desc||s.item)+'</td><td style="font-family:monospace;border:'+BD+';font-size:9pt;padding:4px 6px">'+nb(s.pn)+'</td><td style="text-align:center;border:'+BD+';font-size:9pt;padding:4px 6px">'+nb(s.qty)+'</td><td style="border:'+BD+';font-size:9pt;padding:4px 6px">'+nb(s.issuedTo)+'</td><td style="border:'+BD+';font-size:9pt;padding:4px 6px">'+nb(s.dt)+'</td><td style="border:'+BD+';font-size:9pt;padding:4px 6px">'+(s.supplier||'—')+'</td></tr>';}).join(''):'<tr><td colspan="6" style="text-align:center;color:#999;font-size:9pt;padding:8px;border:'+BD+'">No spares issued</td></tr>';
+  var costHtml=[['Diagnostics Fee',dtLabel,(d.diagCost||0).toFixed(2)],['Service Type Charge',nb(d.svcType),(d.serviceCost||0).toFixed(2)],['Labour','',(d.labour||0).toFixed(2)],['Required Parts (total)','',(d.partsSub||0).toFixed(2)],['Issued to Technician (total)','',(d.issuedSub||0).toFixed(2)],['Accessories (total)','',(d.accSub||0).toFixed(2)]].map(function(r,i){var bg=i%2===0?W:GR;return'<tr style="background:'+bg+'"><td style="font-weight:bold;font-size:9pt;padding:5px 10px;border:'+BD+'">'+r[0]+'</td><td colspan="3" style="font-size:9pt;padding:5px 10px;border:'+BD+'">'+r[1]+'</td><td colspan="2" style="text-align:right;font-size:9pt;padding:5px 10px;border:'+BD+'">SCR '+r[2]+'</td></tr>';}).join('');
   var html='<html><head><meta charset="UTF-8"></head><body>'
     +'<table style="border-collapse:collapse;font-family:Arial,sans-serif;width:700px;margin:0 auto;border:3px solid #888">'
-    +'<tr><td colspan="6" style="background:'+Y+';padding:0;border:'+OBD+'"><table style="width:100%;border-collapse:collapse"><tr>'
-    +'<td style="padding:10px 14px;width:80px"><div style="background:#000;color:'+Y+';font-weight:900;font-size:14pt;padding:6px 10px;border-radius:4px;text-align:center;line-height:1.3">KÄRCHER<br><span style="font-size:8pt;letter-spacing:2px">SERVICE</span></div></td>'
-    +'<td style="padding:10px 6px"><div style="font-size:15pt;font-weight:900;color:#000">DVS INTERNATIONAL CO. LTD</div>'
-    +'<div style="font-size:9pt;color:#333;margin-top:2px">Authorised Kärcher Service Centre | Dekk House, Providence Industrial Estate, P.O. Box 144, Mahé, Seychelles</div>'
-    +'<div style="font-size:8pt;color:#555;margin-top:2px">Tel: +248 4 373 488 | Mobile: +248 2 527 230 | karcher@seychelles.net | www.dvsinternational.net</div></td>'
-    +'</tr></table></td></tr>'
+    +hdr2()
     +'<tr><td colspan="6" style="background:'+DG+';color:#fff;font-weight:bold;font-size:13pt;text-align:center;padding:7px;letter-spacing:1px;border:'+OBD+'">SERVICE JOB CARD</td></tr>'
     +blank()
     +'<tr><td style="background:#fff8d6;font-weight:bold;font-size:10pt;padding:7px 10px;border:'+BD+';color:#7a6000">Job Reference #</td><td colspan="2" style="background:#fff8d6;font-weight:900;font-size:12pt;padding:7px 10px;border:'+BD+';color:#5a4000;font-family:monospace">'+nb(d.ref)+'</td><td style="background:'+GL+';font-weight:bold;font-size:9pt;padding:7px 10px;border:'+BD+'">Date Received</td><td style="background:'+W+';font-size:9pt;padding:7px 10px;border:'+BD+'">'+nb(d.date)+'</td><td style="background:'+Y+';font-weight:bold;font-size:9pt;padding:7px 10px;border:'+BD+';text-align:center">'+nb(d.priority)+'</td></tr>'
     +lr('Promised Return',nb(d.eta),'Status',nb(d.status))
-    +lr('Created by',nb(d.createdByName),'Last updated',nb(d.updatedAt?(new Date(d.updatedAt).toLocaleDateString()):''))
-    +blank()
-    +secRow('1. Customer Information')
+    +lr('Created by',nb(d.createdByName),'Updated',d.updatedAt?(new Date(d.updatedAt).toLocaleDateString()):'')
+    +blank()+sec2('1. Customer Information')
     +lr3('Customer Name',d.custName,'Phone',d.custPhone,'Email',d.custEmail)
     +lr('Company / Employer',d.custCompany,'Contact Person',d.custContact)
     +lr('Account Type',d.custAcct,'','')
-    +blank()
-    +secRow('2. Equipment Details')
+    +blank()+sec2('2. Equipment Details')
     +lr3('Machine Model',d.eqModel,'Machine Part No.',d.eqSerial,'Serial Number',d.eqSN)
     +lr3('Machine Type',d.eqType,'Year / Age',d.eqYear,'Colour / Markings',d.eqColour)
     +lrFull('Accessories / Items',nb(d.eqAcc))
-    +blank()
-    +secRow('3. Fault Description (as reported by customer)')
+    +blank()+sec2('3. Fault Description (as reported by customer)')
     +'<tr><td colspan="6" style="background:#fff8f8;font-size:9pt;font-style:italic;padding:8px 12px;border:'+BD+';min-height:30px">'+nb(d.fault)+'</td></tr>'
-    +blank()
-    +secRow('4. Diagnosis & Findings')
+    +blank()+sec2('4. Diagnosis & Findings')
     +lr3('Technician',d.tech,'Diagnosis Date',d.diagDate,'Est. Completion',d.compDate)
     +'<tr><td style="background:'+GL+';font-weight:bold;font-size:9pt;padding:6px 10px;border:'+BD+'">Findings</td><td colspan="5" style="background:'+W+';font-size:9pt;padding:8px 10px;border:'+BD+';min-height:30px">'+nb(d.findings)+'</td></tr>'
-    +blank()
-    +secRow('5. Spares Issued to Technician')
-    +'<tr style="background:'+GM+'"><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">Item / Part</th><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">Part Number</th><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">Qty</th><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">Issued To</th><th colspan="2" style="font-size:8pt;padding:5px 8px;border:'+BD+'">Date &amp; Time</th></tr>'+siRows
-    +blank()
-    +secRow('6. Spare Parts & Accessories')
-    +'<tr style="background:'+GM+'"><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">#</th><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">Description</th><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">Part Number</th><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">Type</th><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">Qty</th><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">Unit Price</th><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">Total</th><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">Status</th></tr>'+partsRows
-    +blank()
-    +secRow('7. Cost Breakdown & Quotation')
+    +blank()+sec2('5. Spares Issued to Technician')
+    +'<tr style="background:'+GM+'"><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">Item / Part</th><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">Part Number</th><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">Qty</th><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">Issued To</th><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">Date &amp; Time</th><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">Supplier</th></tr>'+issRows
+    +blank()+sec2('6. Spare Parts & Accessories')
+    +'<tr style="background:'+GM+'"><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">#</th><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">Description</th><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">Part Number</th><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">Type</th><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">Qty</th><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">Unit Price</th><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">Total</th><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">Status</th><th style="font-size:8pt;padding:5px 8px;border:'+BD+'">Supplier</th></tr>'+partsRows
+    +blank()+sec2('7. Cost Breakdown & Quotation')
     +'<tr style="background:'+GM+'"><th colspan="4" style="font-size:9pt;padding:5px 10px;border:'+BD+';text-align:left">Cost Item &amp; Detail</th><th colspan="2" style="font-size:9pt;padding:5px 10px;border:'+BD+';text-align:right">Amount (SCR)</th></tr>'
     +costHtml
     +'<tr style="background:'+Y+'"><td colspan="4" style="font-weight:bold;font-size:11pt;padding:8px 10px;border:'+OBD+';color:#5a4000">GRAND TOTAL</td><td colspan="2" style="font-weight:bold;font-size:12pt;padding:8px 10px;border:'+OBD+';text-align:right;color:#000">SCR '+(d.grandTotal||0).toFixed(2)+'</td></tr>'
-    +blank()
-    +secRow('8. Quotation Approval')
+    +blank()+sec2('8. Quotation Approval')
     +lr3('Quotation No.',d.quoteNum,'Quote Sent',d.quoteSent,'Approved By',d.quoteApprover)
     +lr3('Approval Date',d.quoteDate,'Invoice No.',d.invNum,'Invoice Date',d.invDate)
-    +blank()
-    +secRow('9. Quality Check & Handover')
+    +blank()+sec2('9. Quality Check & Handover')
     +'<tr><td style="background:'+GL+';font-weight:bold;font-size:9pt;padding:6px 10px;border:'+BD+'">Machine Tested</td><td style="background:'+(d.chkTested?GREEN:GR)+';color:'+(d.chkTested?GTEXT:'#555')+';font-weight:bold;font-size:9pt;text-align:center;padding:6px 10px;border:'+BD+'">'+(d.chkTested?'✓ Yes':'✗ No')+'</td><td style="background:'+GL+';font-weight:bold;font-size:9pt;padding:6px 10px;border:'+BD+'">Repair Explained</td><td style="background:'+(d.chkExplained?GREEN:GR)+';color:'+(d.chkExplained?GTEXT:'#555')+';font-weight:bold;font-size:9pt;text-align:center;padding:6px 10px;border:'+BD+'">'+(d.chkExplained?'✓ Yes':'✗ No')+'</td><td style="background:'+GL+';font-weight:bold;font-size:9pt;padding:6px 10px;border:'+BD+'">Invoice Paid</td><td style="background:'+(d.chkInvoice?GREEN:GR)+';color:'+(d.chkInvoice?GTEXT:'#555')+';font-weight:bold;font-size:9pt;text-align:center;padding:6px 10px;border:'+BD+'">'+(d.chkInvoice?'✓ Yes':'✗ No')+'</td></tr>'
     +lr3('QC Checked By',d.qcBy,'Date Ready',d.dateReady,'Collected Date',d.dateCollected)
     +lr('Collected By',d.collectedBy,'','')
-    +blank()
-    +secRow('10. Signatures')
+    +blank()+sec2('10. Signatures')
     +'<tr><td colspan="3" style="padding:14px 12px;border:'+OBD+';font-size:9pt;vertical-align:top"><strong>Customer Signature:</strong><br><br><br><br><div style="border-top:1px solid #999;padding-top:4px;font-size:8pt;color:#666">Signature &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date</div><br><strong>Printed Name:</strong><br><br><div style="border-top:1px solid #999;padding-top:4px;font-size:8pt;color:#666">Full name</div></td><td colspan="3" style="padding:14px 12px;border:'+OBD+';font-size:9pt;vertical-align:top"><strong>Staff / Technician Signature:</strong><br><br><br><br><div style="border-top:1px solid #999;padding-top:4px;font-size:8pt;color:#666">Signature &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date</div><br><strong>Printed Name:</strong><br><br><div style="border-top:1px solid #999;padding-top:4px;font-size:8pt;color:#666">Full name</div></td></tr>'
     +'<tr><td colspan="6" style="background:'+YL+';font-size:8pt;text-align:center;padding:6px;border:'+OBD+';color:#777;font-style:italic">DVS International Company Limited | Authorised Kärcher Service Centre | Mahé, Seychelles | Reg. No. 821376</td></tr>'
     +'</table></body></html>';
   blobDownload(html,d.ref+'.xls');
 }
 
-// ══════════════════════════════════════════════
-//  DELIVERY NOTE
-// ══════════════════════════════════════════════
 function downloadDeliveryNote(d){
-  if(!d) return;
-  var nb=function(v2){return v2||'';};
-  var Y='#FFD700',YL='#FFF8D6',DG='#333333',W='#fff',GL='#f7f7f7',BD='1px solid #cccccc',OBD='2px solid #888888';
+  if(!d)return;
+  var nb=function(val){return val||'';};
+  var Y='#FFD700',YL='#FFF8D6',DG='#333',W='#fff',GL='#f7f7f7',BD='1px solid #ccc',OBD='2px solid #888';
   function lr(l1,v1,l2,v2){return'<tr><td style="background:'+GL+';font-weight:bold;font-size:9pt;padding:6px 10px;border:'+BD+';white-space:nowrap;width:20%">'+l1+'</td><td style="background:'+W+';font-size:9pt;padding:6px 10px;border:'+BD+';width:30%">'+nb(v1)+'</td><td style="background:'+GL+';font-weight:bold;font-size:9pt;padding:6px 10px;border:'+BD+';white-space:nowrap;width:20%">'+(l2||'')+'</td><td style="background:'+W+';font-size:9pt;padding:6px 10px;border:'+BD+'">'+nb(v2)+'</td></tr>';}
   function secRow(t){return'<tr><td colspan="4" style="background:'+DG+';color:#fff;font-weight:bold;font-size:10pt;padding:6px 12px;letter-spacing:0.5px;border-top:'+OBD+';border-left:'+OBD+';border-right:'+OBD+';border-bottom:'+BD+'">'+t.toUpperCase()+'</td></tr>';}
   function blank(){return'<tr><td colspan="4" style="height:6px;background:'+W+';border-left:'+OBD+';border-right:'+OBD+';border-top:none;border-bottom:none"></td></tr>';}
   var dnNum='DN-'+d.ref;
   function buildNote(copyLabel){
     return'<table style="border-collapse:collapse;font-family:Arial,sans-serif;width:700px;margin:0 auto;border:3px solid #888">'
-    +'<tr><td colspan="4" style="background:'+Y+';padding:0;border:'+OBD+'"><table style="width:100%;border-collapse:collapse"><tr>'
-    +'<td style="padding:10px 14px;width:80px"><div style="background:#000;color:'+Y+';font-weight:900;font-size:14pt;padding:6px 10px;border-radius:4px;text-align:center;line-height:1.3">KÄRCHER<br><span style="font-size:8pt;letter-spacing:2px">SERVICE</span></div></td>'
-    +'<td style="padding:10px 6px"><div style="font-size:15pt;font-weight:900;color:#000">DVS INTERNATIONAL CO. LTD</div><div style="font-size:9pt;color:#333;margin-top:2px">Authorised Kärcher Service Centre | Dekk House, Providence Industrial Estate, P.O. Box 144, Mahé, Seychelles</div><div style="font-size:8pt;color:#555;margin-top:2px">Tel: +248 4 373 488 | Mobile: +248 2 527 230 | karcher@seychelles.net</div></td>'
-    +'<td style="padding:10px 14px;text-align:right;white-space:nowrap"><div style="font-size:9pt;font-weight:700;color:#5a4000;background:'+YL+';border:1px solid #e6c200;border-radius:4px;padding:4px 10px">'+copyLabel+'</div></td>'
-    +'</tr></table></td></tr>'
+    +'<tr><td colspan="4" style="background:'+Y+';padding:0;border:'+OBD+'"><table style="width:100%;border-collapse:collapse"><tr><td style="padding:10px 14px;width:80px"><div style="background:#000;color:'+Y+';font-weight:900;font-size:14pt;padding:6px 10px;border-radius:4px;text-align:center;line-height:1.3">KÄRCHER<br><span style="font-size:8pt;letter-spacing:2px">SERVICE</span></div></td><td style="padding:10px 6px"><div style="font-size:15pt;font-weight:900;color:#000">DVS INTERNATIONAL CO. LTD</div><div style="font-size:9pt;color:#333;margin-top:2px">Authorised Kärcher Service Centre | Dekk House, Providence Industrial Estate, P.O. Box 144, Mahé, Seychelles</div><div style="font-size:8pt;color:#555;margin-top:2px">Tel: +248 4 373 488 | Mobile: +248 2 527 230 | karcher@seychelles.net</div></td><td style="padding:10px 14px;text-align:right;white-space:nowrap"><div style="font-size:9pt;font-weight:700;color:#5a4000;background:'+YL+';border:1px solid #e6c200;border-radius:4px;padding:4px 10px">'+copyLabel+'</div></td></tr></table></td></tr>'
     +'<tr><td colspan="4" style="background:'+DG+';color:#fff;font-weight:bold;font-size:13pt;text-align:center;padding:7px;letter-spacing:1px;border:'+OBD+'">DELIVERY / RECEIPT NOTE</td></tr>'
     +blank()
     +'<tr><td style="background:#fff8d6;font-weight:bold;font-size:9pt;padding:7px 10px;border:'+BD+';color:#7a6000">Delivery Note No.</td><td style="background:#fff8d6;font-weight:900;font-size:10pt;padding:7px 10px;border:'+BD+';color:#5a4000;font-family:monospace">'+dnNum+'</td><td style="background:'+GL+';font-weight:bold;font-size:9pt;padding:7px 10px;border:'+BD+'">Job Reference</td><td style="background:#fff8d6;font-weight:900;font-size:10pt;padding:7px 10px;border:'+BD+';color:#5a4000;font-family:monospace">'+nb(d.ref)+'</td></tr>'
     +lr('Date Received','<strong>'+nb(d.date)+'</strong>','Priority','<strong>'+nb(d.priority)+'</strong>')
-    +blank()
-    +secRow('Customer Information')
+    +blank()+secRow('Customer Information')
     +lr('Customer Name',d.custName,'Phone',d.custPhone)
     +lr('Email',d.custEmail,'Company',d.custCompany)
-    +blank()
-    +secRow('Equipment Received')
+    +blank()+secRow('Equipment Received')
     +lr('Machine Model',d.eqModel,'Machine Part No.',d.eqSerial)
     +lr('Serial Number',d.eqSN,'Machine Type',d.eqType)
     +lr('Year / Age',d.eqYear,'Colour / Markings',d.eqColour)
     +lr('Condition on Receipt',d.eqCondition,'','')
     +'<tr><td style="background:'+GL+';font-weight:bold;font-size:9pt;padding:6px 10px;border:'+BD+'">Accessories Received</td><td colspan="3" style="background:'+W+';font-size:9pt;padding:6px 10px;border:'+BD+'">'+nb(d.eqAcc)+'</td></tr>'
-    +blank()
-    +secRow('Fault Description (as reported by customer)')
+    +blank()+secRow('Fault Description (as reported by customer)')
     +'<tr><td colspan="4" style="background:#fff8f8;font-size:9pt;font-style:italic;padding:8px 12px;border:'+BD+';min-height:30px">'+nb(d.fault)+'</td></tr>'
-    +blank()
-    +secRow('Standard Service Charges')
+    +blank()+secRow('Standard Service Charges')
     +'<tr><td style="background:'+GL+';font-weight:bold;font-size:9pt;padding:6px 10px;border:'+BD+'">Diagnostics Fee</td><td style="background:'+W+';font-size:9pt;padding:6px 10px;border:'+BD+'">'+(d.diagType==='professional'?'Professional / Commercial Rate':'Domestic / Home &amp; Garden Rate')+'</td><td style="background:'+GL+';font-weight:bold;font-size:9pt;padding:6px 10px;border:'+BD+'">Amount (SCR)</td><td style="background:'+W+';font-size:9pt;font-weight:bold;padding:6px 10px;border:'+BD+';text-align:right">'+(d.diagCost||0).toFixed(2)+'</td></tr>'
     +'<tr><td style="background:'+GL+';font-weight:bold;font-size:9pt;padding:6px 10px;border:'+BD+'">Service Charge</td><td style="background:'+W+';font-size:9pt;padding:6px 10px;border:'+BD+'">'+nb(d.svcType)+'</td><td style="background:'+GL+';font-weight:bold;font-size:9pt;padding:6px 10px;border:'+BD+'">Amount (SCR)</td><td style="background:'+W+';font-size:9pt;font-weight:bold;padding:6px 10px;border:'+BD+';text-align:right">'+(d.serviceCost||0).toFixed(2)+'</td></tr>'
     +blank()
-    +'<tr><td colspan="4" style="background:'+YL+';font-size:9pt;padding:10px 14px;border:'+OBD+'"><strong>&#9432; IMPORTANT NOTE:</strong> &nbsp;A detailed quotation will be sent to you once the diagnostics assessment is completed. Your written approval is required before repair works proceed. The charges above are standard charges applicable upon receipt.</td></tr>'
-    +blank()
-    +secRow('Acknowledgement & Signature')
-    +'<tr><td colspan="2" style="padding:14px 12px;border:'+OBD+';font-size:9pt;vertical-align:top"><strong>Customer Signature:</strong><br><br><br><br><div style="border-top:1px solid #999;padding-top:4px;font-size:8pt;color:#666">Signature &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date</div><br><strong>Printed Name:</strong><br><br><div style="border-top:1px solid #999;padding-top:4px;font-size:8pt;color:#666">Full name</div></td>'
-    +'<td colspan="2" style="padding:14px 12px;border:'+OBD+';font-size:9pt;vertical-align:top"><strong>Received by (DVS Staff):</strong><br><br><br><br><div style="border-top:1px solid #999;padding-top:4px;font-size:8pt;color:#666">Signature &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date</div><br><strong>Printed Name:</strong><br><br><div style="border-top:1px solid #999;padding-top:4px;font-size:8pt;color:#666">Full name</div></td></tr>'
+    +'<tr><td colspan="4" style="background:'+YL+';font-size:9pt;padding:10px 14px;border:'+OBD+'"><strong>&#9432; IMPORTANT NOTE:</strong> &nbsp;A detailed quotation will be sent once diagnostics is completed. Your written approval is required before repair works proceed. The charges above are applicable upon receipt of the machine.</td></tr>'
+    +blank()+secRow('Acknowledgement & Signature')
+    +'<tr><td colspan="2" style="padding:14px 12px;border:'+OBD+';font-size:9pt;vertical-align:top"><strong>Customer Signature:</strong><br><br><br><br><div style="border-top:1px solid #999;padding-top:4px;font-size:8pt;color:#666">Signature &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date</div><br><strong>Printed Name:</strong><br><br><div style="border-top:1px solid #999;padding-top:4px;font-size:8pt;color:#666">Full name</div></td><td colspan="2" style="padding:14px 12px;border:'+OBD+';font-size:9pt;vertical-align:top"><strong>Received by (DVS Staff):</strong><br><br><br><br><div style="border-top:1px solid #999;padding-top:4px;font-size:8pt;color:#666">Signature &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date</div><br><strong>Printed Name:</strong><br><br><div style="border-top:1px solid #999;padding-top:4px;font-size:8pt;color:#666">Full name</div></td></tr>'
     +'<tr><td colspan="4" style="background:'+YL+';font-size:8pt;text-align:center;padding:6px;border:'+OBD+';color:#777;font-style:italic">DVS International Company Limited | Authorised Kärcher Service Centre | Mahé, Seychelles | Reg. No. 821376</td></tr>'
     +'</table>';
   }
@@ -1341,7 +1569,11 @@ function blobDownload(html,filename){
   var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(a.href);
 }
 
-function resetUpload(){}
+// Init
+document.addEventListener('DOMContentLoaded',function(){
+  if(document.getElementById('job-date'))document.getElementById('job-date').value=today();
+  addPart('','','Part','Required');addPart('','','Part','Issued to Tech');
+});
 </script>
 </body>
 </html>
