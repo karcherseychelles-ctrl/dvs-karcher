@@ -191,11 +191,27 @@ body{font-family:Arial,sans-serif;background:#f0f0f0;color:#1a1a1a;font-size:14p
   .dt-cell{flex-wrap:wrap}
   .dt-cell input[type=date]{min-width:130px}
   .dt-cell input[type=time]{min-width:80px}
-  /* Log rows */
-  .log-row{flex-wrap:wrap;gap:5px}
-  .log-ref{font-size:10px}
-  .log-name{font-size:12px}
-  .log-meta{font-size:10px}
+/* ── MOBILE LOG CARDS ── */
+@media(max-width:768px){
+  .log-row{
+    display:block;
+    padding:10px 12px;
+    border-radius:8px;
+    border:1px solid #e0e0e0;
+    margin-bottom:8px;
+    background:#fff;
+    box-shadow:0 1px 3px rgba(0,0,0,.06);
+  }
+  .log-row-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:6px}
+  .log-row-mid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:8px}
+  .log-row-meta-item{font-size:11px;color:#555}
+  .log-row-meta-item span{font-weight:700;color:#1a1a1a}
+  .log-row-actions{display:flex;gap:5px;justify-content:flex-end;border-top:1px solid #f0f0f0;padding-top:7px;margin-top:4px}
+  .log-ref{font-size:10px;font-family:monospace;background:#f5f5f5;border-radius:4px;padding:2px 6px;color:#666;border:1px solid #ddd;flex-shrink:0}
+  .log-name{font-size:13px;font-weight:700;color:#1a1a1a}
+  .log-info{display:block}
+  .log-meta{display:none}
+}
   /* Filter bar */
   .filter-bar{gap:6px}
   .filter-bar select,.filter-bar input{font-size:11px;padding:4px 6px}
@@ -1150,19 +1166,36 @@ function renderLog(){
   document.getElementById('log-count').textContent=arr.length+' of '+visibleJobs().length+' job'+(visibleJobs().length!==1?'s':'');
   if(!arr.length){el.innerHTML='<div class="empty">No jobs match your filters.</div>';return;}
   arr.sort(function(a,b){return(b.date||'').localeCompare(a.date||'');});
-  var bmap={'Received':'b-open','In Diagnosis':'b-prog','In Repair':'b-prog','Awaiting Parts':'b-parts','QC Check':'b-qc','Ready for Collection':'b-qc','Completed':'b-done'};
+  var isMobile=window.innerWidth<=768;
   el.innerHTML=arr.map(function(j){
     var canDel=can('delete'),canEd=canEdit(j),canDl=can('download');
-    return'<div class="log-row"><div class="log-ref">'+esc(j.ref)+'</div>'
-      +'<div class="log-info"><div class="log-name">'+esc(j.custName||'')+' — '+esc(j.eqModel||'')+(j.eqSerial?' <span style="font-family:monospace;font-size:10px;color:#aaa">PN:'+esc(j.eqSerial)+'</span>':'')+'</div>'
-      +'<div class="log-meta">'+esc(j.date||'')+' &nbsp;·&nbsp; '+esc(j.eqType||'')+' &nbsp;·&nbsp; '+(j.tech?esc(j.tech):'Unassigned')+' &nbsp;·&nbsp; <strong>'+fmt(j.grandTotal)+'</strong></div></div>'
-      +'<span class="badge '+(bmap[j.status]||'b-open')+'" style="margin-right:4px">'+esc(j.status||'')+'</span>'
-      +'<div style="display:flex;gap:4px">'
+    var bmap={'Received':'b-open','In Diagnosis':'b-prog','In Repair':'b-prog','Awaiting Parts':'b-parts','QC Check':'b-qc','Ready for Collection':'b-qc','Completed':'b-done'};
+    var statusBadge='<span class="badge '+(bmap[j.status]||'b-open')+'">'+esc(j.status||'')+'</span>';
+    var actions='<div style="display:flex;gap:4px">'
       +(canEd?'<button class="btn warning small" onclick="editJob(\''+j.ref+'\')" title="Edit">&#9998;</button>':'')
       +(canDl?'<button class="btn small" onclick="dlJob(\''+j.ref+'\')" title="Job card">&#8659;</button>':'')
       +(canDl?'<button class="btn info small" onclick="dlDelivery(\''+j.ref+'\')" title="Delivery note">&#128196;</button>':'')
       +(canDel?'<button class="btn danger small" onclick="deleteJob(\''+j.ref+'\')" title="Delete">&#128465;</button>':'')
-      +'</div></div>';
+      +'</div>';
+    if(isMobile){
+      return'<div class="log-row">'
+        +'<div class="log-row-top"><div class="log-ref">'+esc(j.ref)+'</div>'+statusBadge+'</div>'
+        +'<div class="log-name" style="margin-bottom:6px">'+esc(j.custName||'')+'</div>'
+        +'<div class="log-row-mid">'
+        +'<div class="log-row-meta-item">&#128295; <span>'+esc(j.eqModel||'—')+'</span></div>'
+        +'<div class="log-row-meta-item">&#128197; <span>'+esc(j.date||'—')+'</span></div>'
+        +'<div class="log-row-meta-item">&#128101; <span>'+(j.tech?esc(j.tech):'Unassigned')+'</span></div>'
+        +'<div class="log-row-meta-item">&#128179; <strong style="color:#28a745">'+fmt(j.grandTotal)+'</strong></div>'
+        +(j.eqType?'<div class="log-row-meta-item">&#128296; <span>'+esc(j.eqType)+'</span></div>':'')
+        +(j.priority?'<div class="log-row-meta-item">&#9889; <span>'+esc(j.priority)+'</span></div>':'')
+        +'</div>'
+        +'<div class="log-row-actions">'+actions+'</div>'
+        +'</div>';
+    }
+    return'<div class="log-row"><div class="log-ref">'+esc(j.ref)+'</div>'
+      +'<div class="log-info"><div class="log-name">'+esc(j.custName||'')+' — '+esc(j.eqModel||'')+(j.eqSerial?' <span style="font-family:monospace;font-size:10px;color:#aaa">PN:'+esc(j.eqSerial)+'</span>':'')+'</div>'
+      +'<div class="log-meta">'+esc(j.date||'')+' &nbsp;·&nbsp; '+esc(j.eqType||'')+' &nbsp;·&nbsp; '+(j.tech?esc(j.tech):'Unassigned')+' &nbsp;·&nbsp; <strong>'+fmt(j.grandTotal)+'</strong></div></div>'
+      +statusBadge+actions+'</div>';
   }).join('');
 }
 function dlJob(ref){var d=Object.values(jobs).find(function(j){return j.ref===ref;});if(d)downloadJobCard(d);}
