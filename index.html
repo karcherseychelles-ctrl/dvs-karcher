@@ -232,9 +232,131 @@ body{font-family:Arial,sans-serif;background:#f0f0f0;color:#1a1a1a;font-size:14p
   /* Tracker tabs */
   .tracker-tabs{flex-wrap:wrap}
   .tracker-tab{padding:5px 10px;font-size:11px}
-  /* Hide less important columns on mobile in wl-tbl */
-  .od-tbl th:nth-child(5),.od-tbl td:nth-child(5),
-  .od-tbl th:nth-child(6),.od-tbl td:nth-child(6){display:none}
+  /* ── WORKLOAD TABLE — card style on mobile ── */
+  .wl-tbl thead{display:none}
+  .wl-tbl tr{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:4px 10px;
+    padding:10px;
+    border-radius:8px;
+    border:1px solid #e0e0e0;
+    margin-bottom:8px;
+    background:#fff;
+    box-shadow:0 1px 3px rgba(0,0,0,.05);
+  }
+  .wl-tbl td{
+    padding:2px 4px;
+    border:none;
+    font-size:12px;
+    display:flex;
+    flex-direction:column;
+  }
+  .wl-tbl td::before{
+    font-size:9px;
+    font-weight:700;
+    text-transform:uppercase;
+    color:#aaa;
+    letter-spacing:.05em;
+    margin-bottom:1px;
+  }
+  .wl-tbl td:nth-child(1)::before{content:'Technician'}
+  .wl-tbl td:nth-child(2)::before{content:'Received'}
+  .wl-tbl td:nth-child(3)::before{content:'In Repair'}
+  .wl-tbl td:nth-child(4)::before{content:'Awaiting Parts'}
+  .wl-tbl td:nth-child(5)::before{content:'QC / Ready'}
+  .wl-tbl td:nth-child(6)::before{content:'Total Open'}
+  .wl-tbl td:nth-child(7)::before{content:'Status'}
+  .wl-tbl td:nth-child(1){grid-column:1/-1;font-size:14px;font-weight:700;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:6px;margin-bottom:2px}
+  .wl-tbl td:nth-child(7){grid-column:1/-1;font-size:13px}
+
+  /* ── OVERDUE TABLE — card style ── */
+  .od-tbl thead{display:none}
+  .od-tbl tr{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:4px 10px;
+    padding:10px;
+    border-radius:8px;
+    border:1px solid #e0e0e0;
+    margin-bottom:8px;
+    background:#fff;
+    box-shadow:0 1px 3px rgba(0,0,0,.05);
+  }
+  .od-tbl tr.overdue-row{border-color:#f5c6cb;background:#fff5f5}
+  .od-tbl td{padding:2px 4px;border:none;font-size:12px;display:flex;flex-direction:column}
+  .od-tbl td::before{font-size:9px;font-weight:700;text-transform:uppercase;color:#aaa;letter-spacing:.05em;margin-bottom:1px}
+  .od-tbl td:nth-child(1)::before{content:'Job Ref'}
+  .od-tbl td:nth-child(2)::before{content:'Customer'}
+  .od-tbl td:nth-child(3)::before{content:'Machine'}
+  .od-tbl td:nth-child(4)::before{content:'Status'}
+  .od-tbl td:nth-child(5)::before{content:'Date Ready'}
+  .od-tbl td:nth-child(6)::before{content:'Collect By'}
+  .od-tbl td:nth-child(7)::before{content:'Days'}
+  .od-tbl td:nth-child(8)::before{content:''}
+  .od-tbl td:nth-child(1){grid-column:1/-1;font-family:monospace;font-size:11px;border-bottom:1px solid #f0f0f0;padding-bottom:5px;margin-bottom:2px}
+  .od-tbl td:nth-child(2){font-weight:700;font-size:13px}
+  .od-tbl td:nth-child(7){font-size:13px}
+  .od-tbl td:nth-child(8){grid-column:1/-1;justify-content:flex-end;flex-direction:row;padding-top:6px;border-top:1px solid #f0f0f0;margin-top:2px}
+
+  /* ── SLA TABLE — stacked card rows ── */
+  .wl-tbl.sla-tbl thead{display:none}
+  .wl-tbl.sla-tbl tr{
+    display:block;
+    padding:12px;
+    border-radius:8px;
+    border:1px solid #e0e0e0;
+    margin-bottom:10px;
+    background:#fff;
+    box-shadow:0 1px 3px rgba(0,0,0,.05);
+  }
+  .wl-tbl.sla-tbl td{
+    display:flex;
+    gap:6px;
+    padding:3px 0;
+    border:none;
+    font-size:12px;
+    align-items:flex-start;
+  }
+  .wl-tbl.sla-tbl td::before{
+    font-size:9px;
+    font-weight:700;
+    text-transform:uppercase;
+    color:#aaa;
+    letter-spacing:.05em;
+    white-space:nowrap;
+    min-width:80px;
+    padding-top:1px;
+  }
+  .wl-tbl.sla-tbl td:nth-child(1){font-size:13px;font-weight:700;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:7px;margin-bottom:4px;display:block}
+  .wl-tbl.sla-tbl td:nth-child(1)::before{display:none}
+  .wl-tbl.sla-tbl td:nth-child(2)::before{content:'Category:'}
+  .wl-tbl.sla-tbl td:nth-child(3)::before{content:'Diagnosis:'}
+  .wl-tbl.sla-tbl td:nth-child(4)::before{content:'Repair:'}
+  .wl-tbl.sla-tbl td:nth-child(5)::before{content:'Follow-up:'}
+
+  /* Communication standards table */
+  .wl-tbl.comm-tbl thead{display:none}
+  .wl-tbl.comm-tbl tr{display:block;padding:12px;border-radius:8px;border:1px solid #e0e0e0;margin-bottom:10px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  .wl-tbl.comm-tbl td{display:flex;gap:6px;padding:3px 0;border:none;font-size:12px;align-items:flex-start}
+  .wl-tbl.comm-tbl td:nth-child(1){font-size:13px;font-weight:700;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:7px;margin-bottom:4px;display:block}
+  .wl-tbl.comm-tbl td:nth-child(2)::before{content:'Action: ';font-size:9px;font-weight:700;color:#aaa;text-transform:uppercase;white-space:nowrap;min-width:60px}
+  .wl-tbl.comm-tbl td:nth-child(3)::before{content:'Method: ';font-size:9px;font-weight:700;color:#aaa;text-transform:uppercase;white-space:nowrap;min-width:60px}
+  .wl-tbl.comm-tbl td:nth-child(4)::before{content:'By: ';font-size:9px;font-weight:700;color:#aaa;text-transform:uppercase;white-space:nowrap;min-width:60px}
+
+  /* SOPs table */
+  .wl-tbl.sop-tbl thead{display:none}
+  .wl-tbl.sop-tbl tr{display:block;padding:12px;border-radius:8px;border:1px solid #e0e0e0;margin-bottom:10px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  .wl-tbl.sop-tbl td{display:block;padding:3px 0;border:none;font-size:12px;line-height:1.5}
+  .wl-tbl.sop-tbl td:nth-child(1){font-size:13px;font-weight:700;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:7px;margin-bottom:4px}
+
+  /* Quality standards table */
+  .wl-tbl.qual-tbl thead{display:none}
+  .wl-tbl.qual-tbl tr{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;padding:10px;border-radius:8px;border:1px solid #e0e0e0;margin-bottom:8px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  .wl-tbl.qual-tbl td{padding:2px 4px;border:none;font-size:12px;display:flex;flex-direction:column}
+  .wl-tbl.qual-tbl td:nth-child(1){grid-column:1/-1;font-size:13px;font-weight:700;color:#1a1a1a;border-bottom:1px solid #f0f0f0;padding-bottom:5px;margin-bottom:2px}
+  .wl-tbl.qual-tbl td:nth-child(2)::before{content:'Requirement';font-size:9px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.05em}
+  .wl-tbl.qual-tbl td:nth-child(3)::before{content:'Target';font-size:9px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.05em}
 }
 </style>
 </head>
@@ -660,7 +782,7 @@ body{font-family:Arial,sans-serif;background:#f0f0f0;color:#1a1a1a;font-size:14p
 <div class="panel" id="panel-sla">
   <div class="card">
     <div class="sec">&#9200; Service Response Commitments</div>
-    <table class="wl-tbl"><thead><tr><th>Service type</th><th>Customer category</th><th>Diagnosis target</th><th>Repair target</th><th>Follow-up</th></tr></thead>
+    <table class="wl-tbl sla-tbl"><thead><tr><th>Service type</th><th>Customer category</th><th>Diagnosis target</th><th>Repair target</th><th>Follow-up</th></tr></thead>
     <tbody>
       <tr><td style="font-weight:700">Urgent Repair</td><td>All customers</td><td>Within 4 business hours</td><td>Same day / 24 hrs</td><td>Immediate notification on completion</td></tr>
       <tr><td style="font-weight:700">High Priority</td><td>Commercial accounts</td><td>Within 8 business hours</td><td>Within 48 hours</td><td>Daily status update to customer</td></tr>
@@ -673,7 +795,7 @@ body{font-family:Arial,sans-serif;background:#f0f0f0;color:#1a1a1a;font-size:14p
   </div>
   <div class="card">
     <div class="sec">&#128172; Customer Communication Standards</div>
-    <table class="wl-tbl"><thead><tr><th>Stage</th><th>Commitment</th><th>Method</th><th>Responsible</th></tr></thead>
+    <table class="wl-tbl comm-tbl"><thead><tr><th>Stage</th><th>Commitment</th><th>Method</th><th>Responsible</th></tr></thead>
     <tbody>
       <tr><td style="font-weight:700">On drop-off</td><td>Delivery note &amp; job card reference issued. Estimated return date confirmed.</td><td>In-person + WhatsApp/SMS</td><td>Reception / Front desk</td></tr>
       <tr><td style="font-weight:700">After diagnosis</td><td>Customer contacted with findings and written quotation before any work proceeds.</td><td>Call + Email/WhatsApp</td><td>Technician / Manager</td></tr>
@@ -686,7 +808,7 @@ body{font-family:Arial,sans-serif;background:#f0f0f0;color:#1a1a1a;font-size:14p
   </div>
   <div class="card">
     <div class="sec">&#128203; Standard Operating Procedures (SOPs)</div>
-    <table class="wl-tbl"><thead><tr><th>SOP</th><th>Steps</th></tr></thead>
+    <table class="wl-tbl sop-tbl"><thead><tr><th>SOP</th><th>Steps</th></tr></thead>
     <tbody>
       <tr><td style="font-weight:700;white-space:nowrap">Machine intake</td><td>1. Greet customer &amp; inspect machine physically &nbsp;2. Complete delivery note &amp; job card &nbsp;3. Note all accessories received &nbsp;4. Assign job reference &nbsp;5. Give customer their copy of delivery note</td></tr>
       <tr><td style="font-weight:700;white-space:nowrap">Diagnosis</td><td>1. Assign to technician &amp; update status to "In Diagnosis" &nbsp;2. Document root cause in findings &nbsp;3. List all parts required &nbsp;4. Prepare quotation &nbsp;5. Contact customer for approval before proceeding</td></tr>
@@ -722,7 +844,7 @@ body{font-family:Arial,sans-serif;background:#f0f0f0;color:#1a1a1a;font-size:14p
   </div>
   <div class="card">
     <div class="sec">&#128218; Service Quality Standards</div>
-    <table class="wl-tbl"><thead><tr><th>Standard</th><th>Requirement</th><th>Target</th></tr></thead>
+    <table class="wl-tbl qual-tbl"><thead><tr><th>Standard</th><th>Requirement</th><th>Target</th></tr></thead>
     <tbody>
       <tr><td style="font-weight:700">First-time fix rate</td><td>Machine repaired correctly on first attempt without return visit</td><td>&gt; 85%</td></tr>
       <tr><td style="font-weight:700">Customer satisfaction</td><td>Positive feedback from customer at collection</td><td>&gt; 90%</td></tr>
